@@ -1,84 +1,171 @@
-# Task API
+# Task API — C# ASP.NET Core REST API
 
-A modern RESTful Task Management API built with **C# 14**, **ASP.NET Core 10**, **Entity Framework Core 10**, and **PostgreSQL**.
+A **Task Management REST API** built with **C# 14**, **.NET 10**, **ASP.NET Core 10 Web API**, **Entity Framework Core 10**, and **PostgreSQL**.
 
-This project is being built progressively as a practical backend engineering project. The goal is not only to create a working API, but to understand how a real backend evolves from a simple application into a tested, secure, containerized, and deployable service.
+This project is a practical **backend development and software engineering project** designed to demonstrate how a modern REST API evolves from a simple CRUD application into a tested, secure, containerized, and deployable production-style backend.
+
+The project is developed incrementally using a **commit-based roadmap**, where each Git commit represents a specific engineering milestone.
 
 ---
 
-## 🎯 Project Goals
+## Project Overview
 
-This project is designed to practice and demonstrate:
+The Task API provides a backend service for creating, managing, searching, filtering, and completing tasks.
 
-* Modern C# development
-* ASP.NET Core Web API development
+The project will progressively include:
+
 * RESTful API design
-* Dependency Injection
-* Clean application structure
+* CRUD operations
+* C# backend development
+* ASP.NET Core Web API
 * Entity Framework Core
-* PostgreSQL
-* Validation
-* Error handling
-* Logging
-* Automated testing
-* Authentication and authorization
+* PostgreSQL database
+* Dependency Injection
+* DTOs and API contracts
+* Input validation
+* Global error handling
+* Structured logging
+* Unit testing
+* Integration testing
+* JWT authentication
+* Authorization
+* Pagination
+* Filtering and sorting
+* Rate limiting
+* Caching
 * Docker
-* CI/CD
-* API documentation
+* GitHub Actions CI/CD
+* OpenAPI documentation
 * Production deployment
 
-The project will be developed incrementally rather than building everything at once.
+---
+
+# Technology Stack
+
+| Technology                   | Purpose                      |
+| ---------------------------- | ---------------------------- |
+| **C# 14**                    | Programming language         |
+| **.NET 10**                  | Runtime and SDK              |
+| **ASP.NET Core 10**          | REST API / Web API framework |
+| **Entity Framework Core 10** | ORM and database access      |
+| **PostgreSQL**               | Relational database          |
+| **OpenAPI**                  | API documentation            |
+| **xUnit**                    | Automated testing            |
+| **Docker**                   | Containerization             |
+| **GitHub Actions**           | CI/CD                        |
+| **Git / GitHub**             | Version control              |
 
 ---
 
-## 🛠️ Technology Stack
+# Core Features
 
-| Technology               | Purpose              |
-| ------------------------ | -------------------- |
-| C# 14                    | Programming language |
-| .NET 10                  | Runtime / SDK        |
-| ASP.NET Core 10          | Web API framework    |
-| Entity Framework Core 10 | Data access / ORM    |
-| PostgreSQL               | Relational database  |
-| OpenAPI                  | API documentation    |
-| xUnit                    | Testing              |
-| Docker                   | Containerization     |
-| GitHub Actions           | CI/CD                |
-| Git / GitHub             | Version control      |
+The final Task API is planned to support:
+
+### Task Management
+
+* Create tasks
+* Get all tasks
+* Get a task by ID
+* Update tasks
+* Delete tasks
+* Complete and uncomplete tasks
+
+### Querying
+
+* Search tasks
+* Filter tasks
+* Sort tasks
+* Paginate results
+
+### Backend Architecture
+
+* Controllers
+* Services
+* Domain models
+* DTOs
+* Dependency Injection
+* Entity Framework Core
+* PostgreSQL
+
+### Reliability
+
+* Validation
+* Global exception handling
+* ProblemDetails responses
+* Structured logging
+* Unit tests
+* Integration tests
+
+### Security
+
+* User registration
+* User login
+* Password hashing
+* JWT authentication
+* Authorization
+* Task ownership
+* Roles and permissions
+
+### DevOps
+
+* Docker
+* Docker Compose
+* GitHub Actions
+* Automated build and test
+* Environment-based configuration
+* Health checks
+* Production deployment
 
 ---
 
-# 🧭 Development Roadmap
+# API Roadmap
 
-The project is divided into meaningful Git commits.
+The API will progressively evolve toward endpoints such as:
 
-Each commit represents **one engineering milestone**.
+```http
+GET    /api/tasks
+GET    /api/tasks/{id}
+POST   /api/tasks
+PUT    /api/tasks/{id}
+PATCH  /api/tasks/{id}/complete
+DELETE /api/tasks/{id}
+```
 
-The rule is:
+Authentication will later introduce endpoints such as:
 
-> One commit = one clear goal + working code + understandable change.
+```http
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/refresh
+```
+
+---
+
+# Development Roadmap
+
+The project is divided into **24 commit-based engineering milestones**.
+
+The development rule is:
+
+> **One commit = one clear engineering goal, working code, and an understandable change.**
 
 ---
 
 ## COMMIT 01 — Project Foundation
 
-**Goal:** Create the initial ASP.NET Core project and prepare the repository.
+**Goal:** Create and prepare the ASP.NET Core 10 Web API project.
 
 ### Tasks
 
 * Create ASP.NET Core 10 Web API
 * Configure the project
-* Remove unnecessary generated files
+* Remove unnecessary template files
 * Add `.gitignore`
-* Verify the application builds
-* Verify the application runs
+* Verify build
+* Verify application startup
 * Initialize Git
 * Connect GitHub repository
 * Create initial commit
-
-### Expected result
-
-A clean ASP.NET Core project that builds and runs locally.
 
 ### Commit
 
@@ -89,20 +176,19 @@ git commit -m "chore: initialize task api project"
 
 ---
 
-# COMMIT 02 — Task Domain
+## COMMIT 02 — Task Domain Model
 
-**Goal:** Define what a Task is in the application.
+**Goal:** Define the core Task domain.
 
 ### Tasks
 
 * Remove `WeatherForecast`
-* Create `Task` domain model
+* Create the `Task` domain model
 * Define task properties
-* Define basic task rules
-* Add appropriate types
+* Define basic domain rules
 * Build the application
 
-### Initial Task model
+### Initial model
 
 ```text
 Task
@@ -123,9 +209,9 @@ git commit -m "feat: add task domain model"
 
 ---
 
-# COMMIT 03 — Read API
+## COMMIT 03 — Task Read API
 
-**Goal:** Build the first working API endpoints.
+**Goal:** Build the first REST API endpoints.
 
 ### Endpoints
 
@@ -137,10 +223,10 @@ GET /api/tasks/{id}
 ### Tasks
 
 * Create `TasksController`
-* Add in-memory task collection
+* Add temporary in-memory storage
 * Return task collections
-* Find task by ID
-* Return appropriate HTTP status codes
+* Find tasks by ID
+* Return correct HTTP status codes
 
 ### Commit
 
@@ -151,9 +237,9 @@ git commit -m "feat: add task read endpoints"
 
 ---
 
-# COMMIT 04 — Write API
+## COMMIT 04 — Task Write API
 
-**Goal:** Complete basic CRUD functionality.
+**Goal:** Complete basic CRUD operations.
 
 ### Endpoints
 
@@ -180,30 +266,30 @@ git commit -m "feat: add task write endpoints"
 
 ---
 
-# COMMIT 05 — Application Layer
+## COMMIT 05 — Application Service Layer
 
-**Goal:** Separate API concerns from business logic.
+**Goal:** Separate HTTP concerns from business logic.
 
 ### Tasks
 
 * Create `ITaskService`
 * Create `TaskService`
-* Move business logic out of the controller
-* Register the service with Dependency Injection
+* Move business logic out of controllers
+* Register services with Dependency Injection
 * Keep controllers thin
 
 ### Structure
 
 ```text
-TaskApi
-├── Controllers
+TaskApi/
+├── Controllers/
 │   └── TasksController
 │
-├── Services
+├── Services/
 │   ├── ITaskService
 │   └── TaskService
 │
-└── Domain
+└── Domain/
     └── Task
 ```
 
@@ -216,13 +302,11 @@ git commit -m "refactor: introduce task service layer"
 
 ---
 
-# COMMIT 06 — DTOs
+## COMMIT 06 — Data Transfer Objects
 
-**Goal:** Stop exposing domain models directly through the API.
+**Goal:** Separate API contracts from domain models.
 
-### Tasks
-
-Create:
+### Create
 
 ```text
 CreateTaskRequest
@@ -232,10 +316,10 @@ TaskResponse
 
 ### Goals
 
-* Separate API contracts from domain models
-* Control incoming data
-* Control outgoing responses
-* Establish a clean API boundary
+* Control incoming API data
+* Control API responses
+* Prevent direct domain exposure
+* Establish a clear API boundary
 
 ### Commit
 
@@ -246,24 +330,24 @@ git commit -m "feat: add task request and response dtos"
 
 ---
 
-# COMMIT 07 — Validation
+## COMMIT 07 — Request Validation
 
-**Goal:** Prevent invalid task data from entering the application.
+**Goal:** Prevent invalid task data.
 
 ### Tasks
 
-* Required title
-* Title length limits
-* Description limits
-* Validate incoming requests
+* Require task title
+* Limit title length
+* Limit description length
+* Validate requests
 * Return consistent validation errors
 
 ### Examples
 
 ```text
-Empty title        → 400 Bad Request
-Title too long     → 400 Bad Request
-Invalid request    → 400 Bad Request
+Empty title     → 400 Bad Request
+Title too long  → 400 Bad Request
+Invalid request → 400 Bad Request
 ```
 
 ### Commit
@@ -275,16 +359,16 @@ git commit -m "feat: add task validation"
 
 ---
 
-# COMMIT 08 — Database Foundation
+## COMMIT 08 — Entity Framework Core and PostgreSQL
 
-**Goal:** Replace temporary in-memory storage with a real database foundation.
+**Goal:** Introduce the database layer.
 
 ### Tasks
 
 * Add Entity Framework Core
 * Add PostgreSQL provider
 * Create `AppDbContext`
-* Configure the database
+* Configure the database connection
 * Register `DbContext`
 * Configure entity mapping
 
@@ -297,17 +381,17 @@ git commit -m "feat: add ef core and postgresql"
 
 ---
 
-# COMMIT 09 — Database Persistence
+## COMMIT 09 — Database Persistence
 
-**Goal:** Persist tasks in PostgreSQL.
+**Goal:** Store tasks permanently in PostgreSQL.
 
 ### Tasks
 
-* Create initial EF migration
-* Create database
+* Create initial migration
+* Create database schema
 * Replace in-memory storage
 * Implement database CRUD
-* Verify persistence after application restart
+* Verify persistence
 
 ### Commit
 
@@ -318,19 +402,19 @@ git commit -m "feat: persist tasks with postgresql"
 
 ---
 
-# COMMIT 10 — Query Features
+## COMMIT 10 — Search, Filtering, Sorting, and Pagination
 
-**Goal:** Make the API useful for real collections of tasks.
+**Goal:** Support realistic task queries.
 
 ### Features
 
+* Search
 * Filtering
-* Searching
 * Sorting
 * Pagination
 * Pagination metadata
 
-### Example
+### Examples
 
 ```http
 GET /api/tasks?completed=false
@@ -348,18 +432,18 @@ git commit -m "feat: add task filtering sorting and pagination"
 
 ---
 
-# COMMIT 11 — Error Handling
+## COMMIT 11 — Global Error Handling
 
-**Goal:** Establish consistent API error responses.
+**Goal:** Provide consistent API error responses.
 
 ### Tasks
 
 * Global exception handling
 * ProblemDetails
-* 400 responses
-* 404 responses
-* 500 responses
-* Avoid leaking internal implementation details
+* 400 Bad Request
+* 404 Not Found
+* 500 Internal Server Error
+* Prevent internal implementation details from leaking
 
 ### Commit
 
@@ -370,17 +454,17 @@ git commit -m "feat: add global error handling"
 
 ---
 
-# COMMIT 12 — Logging
+## COMMIT 12 — Logging
 
-**Goal:** Make the application observable and easier to debug.
+**Goal:** Improve observability and debugging.
 
 ### Tasks
 
 * Structured logging
 * Service-level logging
 * Error logging
-* Useful diagnostic information
-* Avoid logging sensitive data
+* Diagnostic information
+* Avoid sensitive information in logs
 
 ### Commit
 
@@ -391,7 +475,7 @@ git commit -m "feat: add application logging"
 
 ---
 
-# COMMIT 13 — Unit Testing
+## COMMIT 13 — Unit Testing
 
 **Goal:** Test application logic independently.
 
@@ -413,18 +497,18 @@ git commit -m "test: add task service unit tests"
 
 ---
 
-# COMMIT 14 — Integration / API Testing
+## COMMIT 14 — Integration Testing
 
-**Goal:** Test the API as an actual application.
+**Goal:** Test the REST API as a complete application.
 
 ### Tests
 
-* HTTP requests
-* HTTP status codes
+* HTTP endpoints
 * Request validation
+* HTTP status codes
 * Response bodies
 * Database interactions
-* CRUD behavior
+* CRUD workflows
 
 ### Commit
 
@@ -435,9 +519,9 @@ git commit -m "test: add api integration tests"
 
 ---
 
-# COMMIT 15 — Authentication
+## COMMIT 15 — JWT Authentication
 
-**Goal:** Introduce user identity and authentication.
+**Goal:** Add user authentication.
 
 ### Features
 
@@ -466,9 +550,9 @@ git commit -m "feat: add jwt authentication"
 
 ---
 
-# COMMIT 16 — Authorization
+## COMMIT 16 — Authorization and Task Ownership
 
-**Goal:** Ensure users can access only what they are allowed to access.
+**Goal:** Control access to resources.
 
 ### Tasks
 
@@ -477,7 +561,7 @@ git commit -m "feat: add jwt authentication"
 * Roles
 * Permissions
 * Authorization policies
-* Prevent cross-user access
+* Prevent unauthorized task access
 
 ### Commit
 
@@ -488,9 +572,9 @@ git commit -m "feat: add task authorization"
 
 ---
 
-# COMMIT 17 — Advanced API Features
+## COMMIT 17 — Advanced API Features
 
-**Goal:** Add more realistic backend behavior.
+**Goal:** Add production-oriented API capabilities.
 
 ### Features
 
@@ -515,18 +599,18 @@ git commit -m "feat: add advanced task api features"
 
 ---
 
-# COMMIT 18 — Production Configuration
+## COMMIT 18 — Production Configuration
 
-**Goal:** Prepare the application for real environments.
+**Goal:** Prepare the application for different environments.
 
 ### Tasks
 
-* Environment-based configuration
 * Development configuration
 * Production configuration
 * Environment variables
 * Secret management strategy
 * Health checks
+* Production-safe configuration
 
 ### Commit
 
@@ -537,20 +621,20 @@ git commit -m "chore: add production configuration"
 
 ---
 
-# COMMIT 19 — Docker
+## COMMIT 19 — Docker and Docker Compose
 
-**Goal:** Make the application reproducible and portable.
+**Goal:** Containerize the application and database.
 
 ### Tasks
 
 * Create `Dockerfile`
-* Create `docker-compose.yml`
-* Containerize API
+* Create `compose.yaml`
+* Containerize ASP.NET Core API
 * Containerize PostgreSQL
 * Configure networking
-* Verify complete local environment
+* Verify the complete local environment
 
-### Expected architecture
+### Architecture
 
 ```text
 ┌───────────────┐
@@ -578,11 +662,11 @@ git commit -m "feat: add docker support"
 
 ---
 
-# COMMIT 20 — CI/CD
+## COMMIT 20 — GitHub Actions CI/CD
 
-**Goal:** Automatically verify every change.
+**Goal:** Automate build and test verification.
 
-### GitHub Actions pipeline
+### Pipeline
 
 ```text
 Push
@@ -602,7 +686,7 @@ Pass / Fail
 * Restore dependencies
 * Build application
 * Run tests
-* Fail pipeline when tests fail
+* Fail the workflow when tests fail
 
 ### Commit
 
@@ -613,9 +697,9 @@ git commit -m "ci: add github actions pipeline"
 
 ---
 
-# COMMIT 21 — API Documentation
+## COMMIT 21 — OpenAPI Documentation
 
-**Goal:** Make the API easy for other developers to understand.
+**Goal:** Make the REST API understandable to other developers.
 
 ### Tasks
 
@@ -635,20 +719,19 @@ git commit -m "docs: improve api documentation"
 
 ---
 
-# COMMIT 22 — Production Deployment
+## COMMIT 22 — Production Deployment
 
-**Goal:** Deploy the API so it can be accessed remotely.
+**Goal:** Deploy the Task API for remote access.
 
 ### Tasks
 
-* Choose hosting provider
-* Deploy API
+* Choose a hosting provider
+* Deploy ASP.NET Core API
 * Deploy PostgreSQL
 * Configure environment variables
 * Configure HTTPS
 * Run database migrations
-* Verify production API
-* Test production endpoints
+* Verify production endpoints
 
 ### Commit
 
@@ -659,11 +742,11 @@ git commit -m "deploy: release task api"
 
 ---
 
-# COMMIT 23 — Professional README
+## COMMIT 23 — Professional Project Documentation
 
-**Goal:** Turn the repository into a professional portfolio project.
+**Goal:** Make the repository easy for developers and employers to understand.
 
-### README sections
+### Documentation
 
 * Project overview
 * Features
@@ -688,22 +771,21 @@ git commit -m "docs: complete project documentation"
 
 ---
 
-# COMMIT 24 — Portfolio Release
+## COMMIT 24 — Version 1.0 Portfolio Release
 
-**Goal:** Prepare the project for employers and public review.
+**Goal:** Prepare the Task API as a finished portfolio project.
 
 ### Final checks
 
-* Clean repository
 * Clean source structure
 * All tests passing
-* CI passing
+* CI pipeline passing
 * Production API working
 * README complete
 * Architecture diagram included
-* Example requests included
+* API examples included
 * GitHub repository polished
-* Add release tag
+* Production deployment verified
 
 ### Release
 
@@ -714,46 +796,48 @@ git push origin v1.0.0
 
 ---
 
-# 📊 Progress Tracker
+# Progress Tracker
 
-Update this section as the project progresses.
+Update this checklist as development progresses.
 
 ```text
 [✅] 01 — Project Foundation
-[ ] 02 — Task Domain
-[ ] 03 — Read API
-[ ] 04 — Write API
-[ ] 05 — Application Layer
-[ ] 06 — DTOs
-[ ] 07 — Validation
-[ ] 08 — Database Foundation
+[ ] 02 — Task Domain Model
+[ ] 03 — Task Read API
+[ ] 04 — Task Write API
+[ ] 05 — Application Service Layer
+[ ] 06 — Data Transfer Objects
+[ ] 07 — Request Validation
+[ ] 08 — Entity Framework Core and PostgreSQL
 [ ] 09 — Database Persistence
-[ ] 10 — Query Features
-[ ] 11 — Error Handling
+[ ] 10 — Search, Filtering, Sorting, Pagination
+[ ] 11 — Global Error Handling
 [ ] 12 — Logging
 [ ] 13 — Unit Testing
 [ ] 14 — Integration Testing
-[ ] 15 — Authentication
-[ ] 16 — Authorization
+[ ] 15 — JWT Authentication
+[ ] 16 — Authorization and Task Ownership
 [ ] 17 — Advanced API Features
 [ ] 18 — Production Configuration
-[ ] 19 — Docker
-[ ] 20 — CI/CD
-[ ] 21 — API Documentation
+[ ] 19 — Docker and Docker Compose
+[ ] 20 — GitHub Actions CI/CD
+[ ] 21 — OpenAPI Documentation
 [ ] 22 — Production Deployment
-[ ] 23 — Professional README
-[ ] 24 — Portfolio Release
+[ ] 23 — Professional Project Documentation
+[ ] 24 — Version 1.0 Portfolio Release
 ```
 
 ---
 
-# 🧠 Learning Map
+# C# and Backend Learning Map
 
-The project is also a C# and backend learning path.
+This project is also a structured **C# backend development learning path**.
+
+## C# 14
 
 ```text
 C#
-├── Classes
+├── Classes and Objects
 ├── Records
 ├── Interfaces
 ├── Generics
@@ -762,8 +846,13 @@ C#
 ├── Nullable Reference Types
 ├── Exceptions
 ├── async / await
-└── Dependency Injection
+├── Dependency Injection
+└── Modern C# Language Features
+```
 
+## ASP.NET Core 10
+
+```text
 ASP.NET Core
 ├── Controllers
 ├── Routing
@@ -771,23 +860,35 @@ ASP.NET Core
 ├── Validation
 ├── Middleware
 ├── Configuration
+├── Dependency Injection
 ├── Logging
 ├── Authentication
 └── Authorization
+```
 
+## Entity Framework Core 10
+
+```text
 Entity Framework Core
 ├── DbContext
 ├── Entities
+├── Entity Configuration
 ├── Relationships
-├── LINQ queries
+├── LINQ Queries
 ├── Migrations
 └── Transactions
+```
 
-Backend Engineering
-├── REST
+## Backend Engineering
+
+```text
+Backend Development
 ├── HTTP
+├── REST
+├── JSON
 ├── Databases
-├── Error handling
+├── API Design
+├── Error Handling
 ├── Testing
 ├── Security
 ├── Docker
@@ -797,9 +898,9 @@ Backend Engineering
 
 ---
 
-# 🔄 Development Cycle
+# Development Workflow
 
-Every milestone follows the same process:
+Every milestone follows the same engineering cycle:
 
 ```text
 Understand
@@ -823,18 +924,50 @@ Commit
 Push
 ```
 
-Do not commit code that you do not understand.
+The goal is not simply to finish a **C# Task API**.
 
-The objective is not simply to finish the API.
-
-The objective is to become capable of designing, building, testing, debugging, and explaining a backend system independently.
+The goal is to learn how to independently design, build, test, debug, document, deploy, and maintain a modern backend application.
 
 ---
 
-# 🚀 Current Status
+# Repository Structure
+
+The final project is expected to evolve toward a structure similar to:
+
+```text
+TaskApi/
+├── Controllers/
+├── Domain/
+├── DTOs/
+├── Services/
+├── Data/
+├── Middleware/
+├── Tests/
+├── Properties/
+├── Program.cs
+├── appsettings.json
+├── Dockerfile
+├── compose.yaml
+├── TaskApi.csproj
+├── README.md
+└── .github/
+    └── workflows/
+```
+
+The structure will evolve during development rather than being created all at once.
+
+---
+
+# Current Status
 
 **Current milestone:** COMMIT 01 — Project Foundation
 
-**Next milestone:** COMMIT 02 — Task Domain
+**Next milestone:** COMMIT 02 — Task Domain Model
 
-The next implementation step is to remove the generated `WeatherForecast` example and introduce the real `Task` domain.
+The next implementation step is to remove the generated `WeatherForecast` example and create the real `Task` domain model.
+
+---
+
+## Keywords
+
+`C#` · `C# 14` · `.NET 10` · `ASP.NET Core 10` · `ASP.NET Core Web API` · `REST API` · `RESTful API` · `Task Management API` · `Task Management System` · `Entity Framework Core` · `EF Core` · `PostgreSQL` · `JWT Authentication` · `REST API Development` · `Backend Development` · `Backend Engineering` · `Docker` · `GitHub Actions` · `CI/CD` · `OpenAPI` · `xUnit` · `C# Backend Project`
