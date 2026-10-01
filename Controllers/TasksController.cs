@@ -1,61 +1,50 @@
 using Microsoft.AspNetCore.Mvc;
-using TaskApi.Requests;
 using TaskApi.Domain;
+using TaskApi.Requests;
+using TaskApi.Services;
 
 namespace TaskApi.Controllers;
 
 /// <summary>
-/// Provides read-only HTTP endpoints for task resources.
+/// Provides HTTP endpoints for managing task resources.
 /// </summary>
-
 [ApiController]
 [Route("api/[controller]")]
-public sealed class TasksController: ControllerBase
+public sealed class TasksController : ControllerBase
 {
-    private static readonly List<TaskItem> Tasks =
-    [
-        new(
-            "Learn ASP.NET Core",
-            "Build the first REST API."
-        ),
-        new(
-            "Build Task API",
-            "Practice controllers and HTTP endpoints."
-        ),
-        new(
-            "Practice C# LINQ",
-            "Learn how to query in-memory collections."
-        )
-    ];
+    private readonly ITaskService _taskService;
 
+    public TasksController(ITaskService taskService)
+    {
+        _taskService = taskService;
+    }
 
     /// <summary>
     /// Returns all tasks.
     /// </summary>
-    /// <returns>A collection of tasks.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<IEnumerable<TaskItem>> GetAll()
     {
-        return Ok(Tasks);
+        return Ok(_taskService.GetAll());
     }
-    
+
     /// <summary>
     /// Returns a task by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the task.</param>
-    /// <returns>The requested task if it exists.</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<TaskItem> GetById(Guid id)
     {
-        var task = Tasks.FirstOrDefault(item => item.Id == id);
+        var task = _taskService.GetById(id);
 
         if (task is null)
         {
             return NotFound();
         }
+
         return Ok(task);
     }
 
@@ -66,14 +55,14 @@ public sealed class TasksController: ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<TaskItem> Create(TaskWriteRequest  request)
+    public ActionResult<TaskItem> Create(TaskWriteRequest request)
     {
         try
         {
-            var task = new TaskItem(
+            var task = _taskService.Create(
                 request.Title,
                 request.Description);
-            Tasks.Add(task);
+
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = task.Id },
@@ -81,10 +70,10 @@ public sealed class TasksController: ControllerBase
         }
         catch (ArgumentException exception)
         {
-            return BadRequest( new 
+            return BadRequest(new
             {
                 message = exception.Message,
-                parameter = exception.ParamName   
+                parameter = exception.ParamName
             });
         }
     }
@@ -92,54 +81,58 @@ public sealed class TasksController: ControllerBase
     /// <summary>
     /// Updates an existing task.
     /// </summary>
-    /// <param name="id">The unique identifier of the task.</param>
+    /// <param name="id">The task identifier.</param>
     /// <param name="request">The updated task data.</param>
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Update(Guid id, TaskWriteRequest request)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult Update(
+        Guid id,
+        TaskWriteRequest request)
     {
-        var task = Tasks.FirstOrDefault(item => item.Id == id);
-        if (task is null)
+        var existingTask = _taskService.GetById(id);
+
+        if (existingTask is null)
         {
             return NotFound();
         }
 
-
         try
         {
-            task.Update(
+            _taskService.Update(
+                id,
                 request.Title,
                 request.Description);
+
+            return NoContent();
         }
         catch (ArgumentException exception)
         {
-            return BadRequest( new
+            return BadRequest(new
             {
                 message = exception.Message,
                 parameter = exception.ParamName
-                    
             });
         }
-        return NoContent();
     }
 
     /// <summary>
     /// Deletes an existing task.
     /// </summary>
-    /// <param name="id">The unique identifier of the task.</param>
+    /// <param name="id">The task identifier.</param>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult Delete(Guid id)
     {
-        var task = Tasks.FirstOrDefault(item => item.Id == id);
-        if (task is null)
+        var deleted = _taskService.Delete(id);
+
+        if (!deleted)
         {
             return NotFound();
         }
-        Tasks.Remove(task);
+
         return NoContent();
     }
 }
