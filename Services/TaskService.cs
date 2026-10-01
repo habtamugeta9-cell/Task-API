@@ -2,7 +2,6 @@ using TaskApi.Domain;
 
 namespace TaskApi.Services;
 
-
 /// <summary>
 /// Provides application operations for task resources using in-memory storage.
 /// </summary>
@@ -23,28 +22,25 @@ public sealed class TaskService : ITaskService
             "Learn how to query in-memory collections."
         )
     ];
-    
+
     private readonly object _lock = new();
-    
-        /// <inheritdoc />
+
     public IReadOnlyList<TaskItem> GetAll()
     {
         lock (_lock)
         {
-            return _items.ToList();
+            return _tasks.ToList();
         }
     }
 
-    /// <inheritdoc />
     public TaskItem? GetById(Guid id)
     {
         lock (_lock)
         {
-            return _items.FirstOrDefault(x => x.Id == id);
+            return _tasks.FirstOrDefault(task => task.Id == id);
         }
     }
 
-    /// <inheritdoc />
     public TaskItem Create(string title, string? description)
     {
         var task = new TaskItem(title, description);
@@ -53,34 +49,42 @@ public sealed class TaskService : ITaskService
         {
             _tasks.Add(task);
         }
+
         return task;
     }
 
-    /// <inheritdoc />
-    public bool Update(Guid id, string title, string? description)
+    public bool Update(
+        Guid id,
+        string title,
+        string? description)
     {
-        var task = _tasks.FirstOrDefault(item => item.Id == id);
-        if (task is null)
+        lock (_lock)
         {
-            return false;
-        }
-        task.Update(title, description);
+            var task = _tasks.FirstOrDefault(item => item.Id == id);
 
-        return true;
+            if (task is null)
+            {
+                return false;
+            }
+
+            task.Update(title, description);
+
+            return true;
+        }
     }
 
-    /// <inheritdoc />
     public bool Delete(Guid id)
     {
         lock (_lock)
         {
             var task = _tasks.FirstOrDefault(item => item.Id == id);
+
             if (task is null)
             {
                 return false;
             }
+
             return _tasks.Remove(task);
         }
     }
 }
-
