@@ -13,22 +13,23 @@ public sealed class TasksController(
     ITaskService taskService) : ControllerBase
 {
 
-/// <summary>
-/// Returns all tasks.
-/// </summary>
-/// <returns>A collection of task responses.</returns>
-[HttpGet]
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-public ActionResult<IEnumerable<TaskResponse>> GetTasks()
-{
-    var tasks = taskService.GetAll();
-    
-    var response = tasks
-        .Select(TaskResponse.FromDomain)
-        .ToList();
-    return Ok(response);
-}
+    /// <summary>
+    /// Returns all tasks.
+    /// </summary>
+    /// <returns>A collection of task responses.</returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public ActionResult<IEnumerable<TaskResponse>> GetTasks()
+    {
+        var tasks = taskService.GetAll();
+        
+        var response = tasks
+            .Select(TaskResponse.FromDomain)
+            .ToList();
+        return Ok(response);
+    }
+
     /// <summary>
     /// Returns a task by its unique identifier.
     /// </summary>
@@ -81,7 +82,8 @@ public ActionResult<IEnumerable<TaskResponse>> GetTasks()
 
             });
         }
-    } 
+    }
+
     /// <summary>
     /// Updates an existing task.
     /// </summary>
@@ -107,13 +109,13 @@ public ActionResult<IEnumerable<TaskResponse>> GetTasks()
                 request.Description);
             return NoContent();
         }
-        catch (ArgumentException exception)
+        catch (ArgumentException e)
         {
             return BadRequest(
                 new
                 {
-                    message = exception.Message,
-                    parameters = exception.ParamName
+                    message = e.Message,
+                    parameters = e.ParamName
                 });
         }
     }

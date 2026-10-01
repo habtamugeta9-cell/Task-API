@@ -361,23 +361,183 @@ git commit -m "feat: add task validation"
 
 ## COMMIT 08 — Entity Framework Core and PostgreSQL
 
-**Goal:** Introduce the database layer.
+**Goal:** Introduce the database layer without replacing the in-memory task service. Connecting `TaskService` to PostgreSQL is COMMIT 09.
 
-### Tasks
+EF Core 10 is the EF release line for .NET 10 ([what's new in EF Core 10](https://learn.microsoft.com/ef/core/what-is-new/ef-core-10.0/whatsnew)). `DbContext` represents a unit of work for querying and saving data ([EF Core overview](https://learn.microsoft.com/ef/core/)); the Npgsql provider connects EF Core to PostgreSQL.
 
-* Add Entity Framework Core
-* Add PostgreSQL provider
-* Create `AppDbContext`
-* Configure the database connection
-* Register `DbContext`
-* Configure entity mapping
+```text
+COMMIT 08
+├── Add EF Core and PostgreSQL packages
+├── Add EF Core Design tools
+├── Create AppDbContext
+├── Map TaskItem to the tasks table
+├── Configure the database connection
+├── Register DbContext with dependency injection
+└── Build and verify the existing API
+```
+
+### 1. Check PostgreSQL
+
+On Debian or Ubuntu, check whether the PostgreSQL client and service are available:
+
+```bash
+psql --version
+sudo systemctl status postgresql
+```
+
+If PostgreSQL is not installed, install and start it:
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl enable --now postgresql
+```
+
+These commands prepare a local server for COMMIT 09. The API can build and start without connecting to the database in this milestone.
+
+### 2. Add EF Core packages and tools
+
+Keep the EF Core runtime, provider, design package, and CLI on compatible EF 10 versions. The project currently uses EF Core 10.0.12 and Npgsql 10.0.3:
+
+```bash
+dotnet add package Microsoft.EntityFrameworkCore --version 10.0.12
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL --version 10.0.3
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 10.0.12
+```
+
+The Design package is private to this project and supports EF tooling. Install the matching CLI if needed:
+
+```bash
+dotnet tool install --global dotnet-ef --version 10.0.12
+dotnet ef --version
+```
+
+If `dotnet-ef` is already installed, use `dotnet tool update --global dotnet-ef --version 10.0.12` instead.
+
+### 3. Create `AppDbContext`
+
+Add `Data/AppDbContext.cs`:
+
+```csharp
+using Microsoft.EntityFrameworkCore;
+using TaskApi.Domain;
+
+namespace TaskApi.Data;
+
+/// <summary>
+/// Represents the Entity Framework Core database session for the Task API.
+/// </summary>
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
+    : DbContext(options)
+{
+    public DbSet<TaskItem> Tasks => Set<TaskItem>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TaskItem>(entity =>
+        {
+            entity.ToTable("tasks");
+
+            entity.HasKey(task => task.Id);
+
+            entity.Property(task => task.Id)
+                .ValueGeneratedNever();
+
+            entity.Property(task => task.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(task => task.Description)
+                .HasMaxLength(2000);
+
+            entity.Property(task => task.IsCompleted)
+                .IsRequired();
+
+            entity.Property(task => task.CreatedAt)
+                .IsRequired();
+
+            entity.Property(task => task.UpdatedAt);
+        });
+    }
+}
+```
+
+`DbSet<TaskItem>` exposes the task entities to EF Core. The explicit mapping sets the table name, key behavior, and column constraints. EF Core supports the domain model's private property setters, so `TaskItem` does not need to be renamed or made mutable for this milestone.
+
+### 4. Configure the connection string
+
+Add a local connection string to `appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "TaskApiDatabase": "Host=localhost;Port=5432;Database=task_api;Username=postgres;Password=postgres"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
+
+The username and password above are local placeholders; replace them with credentials for your machine. Never put a real or production password in a tracked settings file. Use development secrets or environment configuration for real credentials.
+
+### 5. Register the context
+
+In `Program.cs`, register the PostgreSQL provider and context:
+
+```csharp
+using Microsoft.EntityFrameworkCore;
+using TaskApi.Data;
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("TaskApiDatabase"));
+});
+```
+
+`AddDbContext` registers the context as a scoped service. `TaskService` remains backed by its in-memory list for now; COMMIT 09 will inject `AppDbContext` into the service and move persistence to PostgreSQL.
+
+### 6. Build and verify
+
+Build the project:
+
+```bash
+dotnet build
+```
+
+Verify the EF CLI and context configuration:
+
+```bash
+dotnet ef --help
+dotnet ef dbcontext info
+```
+
+The context information command should report `TaskApi.Data.AppDbContext` and the Npgsql provider. It does not require creating a migration or changing the service's storage.
+
+Start the API and confirm the existing endpoint still works:
+
+```bash
+dotnet run
+curl -i http://localhost:5058/api/tasks
+```
+
+The request should return `HTTP/1.1 200 OK` with the in-memory tasks. The database schema and migration are COMMIT 09.
 
 ### Commit
 
+Before committing, inspect `git status` and `git diff`, then stage only the intended milestone files:
+
 ```bash
-git add .
+git add TaskApi.csproj Program.cs appsettings.json Data/AppDbContext.cs README.md
 git commit -m "feat: add ef core and postgresql"
 ```
+
+The README progress tracker below already marks COMMIT 08 complete and COMMIT 09 pending.
 
 ---
 
