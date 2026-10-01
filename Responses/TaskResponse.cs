@@ -21,7 +21,6 @@ public sealed class TaskResponse
             CreatedAt = task.CreatedAt,
             UpdatedAt = task.UpdatedAt
         };
-
     }
     
      

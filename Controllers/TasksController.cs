@@ -10,23 +10,24 @@ namespace TaskApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public sealed class TasksController(
+public sealed class TaskController(
     ITaskService taskService) : ControllerBase
 {
+
     /// <summary>
     /// Returns all tasks.
     /// </summary>
     /// <returns>A collection of task responses.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IEnumerable<TaskResponse>> GetAll()
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public ActionResult<IEnumerable<TaskResponse>> GetTasks()
     {
         var tasks = taskService.GetAll();
-
+        
         var response = tasks
             .Select(TaskResponse.FromDomain)
             .ToList();
-
         return Ok(response);
     }
 
@@ -35,18 +36,19 @@ public sealed class TasksController(
     /// </summary>
     /// <param name="id">The unique identifier of the task.</param>
     /// <returns>The requested task.</returns>
+
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<TaskResponse> GetById(Guid id)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public ActionResult<TaskResponse> GetTaskById(Guid id)
     {
         var task = taskService.GetById(id);
 
-        if (task is null)
+        if (task == null)
         {
             return NotFound();
         }
-
         return Ok(TaskResponse.FromDomain(task));
     }
 
@@ -58,19 +60,18 @@ public sealed class TasksController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<TaskResponse> Create(CreateTaskRequest request)
+    public ActionResult<TaskResponse> CreateTask(CreateTaskRequest request)
     {
         try
         {
             var task = taskService.Create(
                 request.Title,
                 request.Description);
-
             var response = TaskResponse.FromDomain(task);
-
+            
             return CreatedAtAction(
-                nameof(GetById),
-                new { id = task.Id },
+                nameof(GetTaskById), 
+                new { id = task.Id }, 
                 response);
         }
         catch (ArgumentException exception)
@@ -78,7 +79,8 @@ public sealed class TasksController(
             return BadRequest(new
             {
                 message = exception.Message,
-                parameter = exception.ParamName
+                parameters = exception.ParamName
+
             });
         }
     }
@@ -92,12 +94,9 @@ public sealed class TasksController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Update(
-        Guid id,
-        UpdateTaskRequest request)
+    public IActionResult UpdateTask(Guid id, UpdateTaskRequest request)
     {
         var existingTask = taskService.GetById(id);
-
         if (existingTask is null)
         {
             return NotFound();
@@ -109,16 +108,16 @@ public sealed class TasksController(
                 id,
                 request.Title,
                 request.Description);
-
             return NoContent();
         }
-        catch (ArgumentException exception)
+        catch (ArgumentException e)
         {
-            return BadRequest(new
-            {
-                message = exception.Message,
-                parameter = exception.ParamName
-            });
+            return BadRequest(
+                new
+                {
+                    message = e.Message,
+                    parameters = e.ParamName
+                });
         }
     }
 
@@ -129,15 +128,22 @@ public sealed class TasksController(
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Delete(Guid id)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public IActionResult DeleteTask(Guid id)
     {
-        var deleted = taskService.Delete(id);
-
-        if (!deleted)
+        var task = taskService.Delete(id);
+        if (!task)
         {
             return NotFound();
         }
-
         return NoContent();
     }
+    
+    
+    
+    
+    
+    
+    
+    
 }
