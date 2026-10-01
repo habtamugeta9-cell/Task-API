@@ -4,7 +4,6 @@ using TaskApi.Responses;
 using TaskApi.Services;
 
 namespace TaskApi.Controllers;
-
 /// <summary>
 /// Provides HTTP endpoints for managing task resources.
 /// </summary>
@@ -138,12 +137,4 @@ public sealed class TaskController(
         }
         return NoContent();
     }
-    
-    
-    
-    
-    
-    
-    
-    
 }

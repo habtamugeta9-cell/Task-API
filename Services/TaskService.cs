@@ -1,13 +1,15 @@
 using TaskApi.Domain;
 
+
 namespace TaskApi.Services;
+
 
 /// <summary>
 /// Provides application operations for task resources using in-memory storage.
 /// </summary>
 public sealed class TaskService : ITaskService
 {
-    private readonly List<TaskItem> _tasks =
+    private readonly List<TaskItem> _taskItems =
     [
         new(
             "Learn ASP.NET Core",
@@ -22,14 +24,15 @@ public sealed class TaskService : ITaskService
             "Learn how to query in-memory collections."
         )
     ];
-
+    
     private readonly object _lock = new();
 
     public IReadOnlyList<TaskItem> GetAll()
     {
         lock (_lock)
         {
-            return _tasks.ToList();
+            return _taskItems.ToList();
+            
         }
     }
 
@@ -37,38 +40,30 @@ public sealed class TaskService : ITaskService
     {
         lock (_lock)
         {
-            return _tasks.FirstOrDefault(task => task.Id == id);
+            return _taskItems.FirstOrDefault(taskItem => taskItem.Id == id);
         }
     }
 
     public TaskItem Create(string title, string? description)
     {
-        var task = new TaskItem(title, description);
-
+        var taskItem = new TaskItem(title, description);
         lock (_lock)
         {
-            _tasks.Add(task);
+            _taskItems.Add(taskItem);
         }
-
-        return task;
+        return taskItem;
     }
 
-    public bool Update(
-        Guid id,
-        string title,
-        string? description)
+    public bool Update(Guid id, string title, string? description)
     {
         lock (_lock)
         {
-            var task = _tasks.FirstOrDefault(item => item.Id == id);
-
+            var task = _taskItems.FirstOrDefault(item => item.Id == id);
             if (task is null)
             {
                 return false;
             }
-
             task.Update(title, description);
-
             return true;
         }
     }
@@ -77,14 +72,13 @@ public sealed class TaskService : ITaskService
     {
         lock (_lock)
         {
-            var task = _tasks.FirstOrDefault(item => item.Id == id);
-
-            if (task is null)
-            {
-                return false;
-            }
-
-            return _tasks.Remove(task);
+           var tak = _taskItems.FirstOrDefault(item => item.Id == id);
+           if (tak is null)
+           {
+               return false;
+           }
+           return _taskItems.Remove(tak);
         }
     }
+    
 }
