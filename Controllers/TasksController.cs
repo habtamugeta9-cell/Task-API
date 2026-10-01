@@ -9,27 +9,26 @@ namespace TaskApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public sealed class TaskController(
+public sealed class TasksController(
     ITaskService taskService) : ControllerBase
 {
 
-    /// <summary>
-    /// Returns all tasks.
-    /// </summary>
-    /// <returns>A collection of task responses.</returns>
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<IEnumerable<TaskResponse>> GetTasks()
-    {
-        var tasks = taskService.GetAll();
-        
-        var response = tasks
-            .Select(TaskResponse.FromDomain)
-            .ToList();
-        return Ok(response);
-    }
-
+/// <summary>
+/// Returns all tasks.
+/// </summary>
+/// <returns>A collection of task responses.</returns>
+[HttpGet]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+public ActionResult<IEnumerable<TaskResponse>> GetTasks()
+{
+    var tasks = taskService.GetAll();
+    
+    var response = tasks
+        .Select(TaskResponse.FromDomain)
+        .ToList();
+    return Ok(response);
+}
     /// <summary>
     /// Returns a task by its unique identifier.
     /// </summary>
@@ -82,8 +81,7 @@ public sealed class TaskController(
 
             });
         }
-    }
-
+    } 
     /// <summary>
     /// Updates an existing task.
     /// </summary>
@@ -109,13 +107,13 @@ public sealed class TaskController(
                 request.Description);
             return NoContent();
         }
-        catch (ArgumentException e)
+        catch (ArgumentException exception)
         {
             return BadRequest(
                 new
                 {
-                    message = e.Message,
-                    parameters = e.ParamName
+                    message = exception.Message,
+                    parameters = exception.ParamName
                 });
         }
     }

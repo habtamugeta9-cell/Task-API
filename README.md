@@ -802,13 +802,13 @@ Update this checklist as development progresses.
 
 ```text
 [✅] 01 — Project Foundation
-[ ] 02 — Task Domain Model
-[ ] 03 — Task Read API
-[ ] 04 — Task Write API
-[ ] 05 — Application Service Layer
-[ ] 06 — Data Transfer Objects
-[ ] 07 — Request Validation
-[ ] 08 — Entity Framework Core and PostgreSQL
+[✅] 02 — Task Domain Model
+[✅] 03 — Task Read API
+[✅] 04 — Task Write API
+[✅] 05 — Application Service Layer
+[✅] 06 — Data Transfer Objects
+[✅] 07 — Request Validation
+[✅] 08 — Entity Framework Core and PostgreSQL
 [ ] 09 — Database Persistence
 [ ] 10 — Search, Filtering, Sorting, Pagination
 [ ] 11 — Global Error Handling
