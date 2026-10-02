@@ -47,7 +47,6 @@
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.CodeAnalysis.Workspaces.MSBuild.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.EntityFrameworkCore.Design.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.Extensions.DependencyModel.dll
-/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.VisualStudio.SolutionPersistence.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Mono.TextTemplating.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Newtonsoft.Json.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/System.CodeDom.dll
@@ -121,3 +120,4 @@
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/tr/Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.VisualStudio.SolutionPersistence.dll

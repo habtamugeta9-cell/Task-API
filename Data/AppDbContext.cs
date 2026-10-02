@@ -14,7 +14,7 @@ public sealed class AppDbContext(
     {
         modelBuilder.Entity<TaskItem>(entity =>
             {
-                entity.ToTable("TaskItem");
+                entity.ToTable("tasks");
                 entity.HasKey(task => task.Id);
                 entity.Property(task => task.Id)
                     .ValueGeneratedNever();
@@ -28,8 +28,7 @@ public sealed class AppDbContext(
                     .IsRequired();
                 entity.Property(task => task.CreatedAt)
                     .IsRequired();
-                entity.Property(task => task.UpdatedAt)
-                    .IsRequired();
+                entity.Property(task => task.UpdatedAt);
             }
         );
 

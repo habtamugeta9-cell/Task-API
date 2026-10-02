@@ -1120,11 +1120,11 @@ The structure will evolve during development rather than being created all at on
 
 # Current Status
 
-**Current milestone:** COMMIT 01 — Project Foundation
+**Current milestone:** COMMIT 09 — Database Persistence (in progress)
 
-**Next milestone:** COMMIT 02 — Task Domain Model
+**Next milestone:** COMMIT 10 — Search, Filtering, Sorting, Pagination
 
-The next implementation step is to remove the generated `WeatherForecast` example and create the real `Task` domain model.
+COMMIT 09 is not complete yet: `TaskService` still uses in-memory storage, and the database migration and persistence implementation remain to be done.
 
 ---
 

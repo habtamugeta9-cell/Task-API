@@ -4,7 +4,7 @@ using TaskApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddConnections();
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton<ITaskService, TaskService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
