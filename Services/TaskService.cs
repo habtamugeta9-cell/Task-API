@@ -1,8 +1,7 @@
-
-
 using Microsoft.EntityFrameworkCore;
 using TaskApi.Data;
 using TaskApi.Domain;
+using TaskApi.Queries;
 
 namespace TaskApi.Services;
 
@@ -12,15 +11,67 @@ namespace TaskApi.Services;
 public sealed class TaskService(
     AppDbContext dbContext) : ITaskService
 {
-    public async Task<IReadOnlyList<TaskItem>> GetAllAsync()
+    public async Task<PagedResult<TaskItem>> GetAllAsync(TaskQuery query)
     {
-        return await dbContext
-            .Tasks
-            .AsNoTracking()
-            .OrderByDescending(task => task.CreatedAt)
+        IQueryable<TaskItem> tasks = dbContext.Tasks.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var search = query.Search.Trim();
+            tasks = tasks.Where(task =>
+                EF.Functions.ILike(task.Title, $"%{search}%") ||
+                (task.Description != null &&
+                    EF.Functions.ILike(task.Description, $"%{search}%")));
+        }
+
+        if (query.Completed.HasValue)
+        {
+            tasks = tasks.Where(task => task.IsCompleted == query.Completed.Value);
+        }
+
+        tasks = query.Sort?.ToLowerInvariant() switch
+        {
+            "title" => tasks.OrderBy(task => task.Title),
+            "title_desc" => tasks.OrderByDescending(task => task.Title),
+            "createdat" => tasks.OrderBy(task => task.CreatedAt),
+            "createdat_desc" => tasks.OrderByDescending(task => task.CreatedAt),
+            "completed" => tasks.OrderBy(task => task.IsCompleted),
+            "completed_desc" => tasks.OrderByDescending(task => task.IsCompleted),
+            _ => tasks.OrderByDescending(task => task.CreatedAt)
+        };
+
+        var page = Math.Max(query.Page, 1);
+        var pageSize = Math.Clamp(query.PageSize, 1, 100);
+
+        var totalCount = await tasks.CountAsync();
+        var totalPages = totalCount == 0
+            ? 0
+            : (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var items = await tasks
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<TaskItem>
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages,
+        };
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public async Task<TaskItem?> GetByIdAsync(Guid id)
     {
         return await dbContext

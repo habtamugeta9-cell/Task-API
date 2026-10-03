@@ -1,4 +1,5 @@
 using TaskApi.Domain;
+using TaskApi.Queries;
 
 namespace TaskApi.Services;
 /// <summary>
@@ -6,7 +7,7 @@ namespace TaskApi.Services;
 /// </summary>
 public interface ITaskService
 {
-    Task<IReadOnlyList<TaskItem>> GetAllAsync();
+    Task<PagedResult<TaskItem>> GetAllAsync(TaskQuery query);
 
     Task<TaskItem?> GetByIdAsync(Guid id);
 
