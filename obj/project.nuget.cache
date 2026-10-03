@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "tkWk1rgiyqg=",
+  "dgSpecHash": "uAhEpJ/Dq1g=",
   "success": true,
   "projectFilePath": "/home/habte/Projects/TaskApi/TaskApi.csproj",
   "expectedPackageFiles": [
@@ -37,7 +37,7 @@
     {
       "code": "NU1900",
       "level": "Warning",
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
+      "message": "Error occurred while getting package vulnerability data: Resource temporarily unavailable (api.nuget.org:443)",
       "projectPath": "/home/habte/Projects/TaskApi/TaskApi.csproj",
       "warningLevel": 1,
       "filePath": "/home/habte/Projects/TaskApi/TaskApi.csproj",

@@ -1,84 +1,67 @@
-using TaskApi.Domain;
 
+
+using Microsoft.EntityFrameworkCore;
+using TaskApi.Data;
+using TaskApi.Domain;
 
 namespace TaskApi.Services;
 
-
 /// <summary>
-/// Provides application operations for task resources using in-memory storage.
+/// Provides application operations for task resources using PostgreSQL.
 /// </summary>
-public sealed class TaskService : ITaskService
+public sealed class TaskService(
+    AppDbContext dbContext): ITaskService
 {
-    private readonly List<TaskItem> _taskItems =
-    [
-        new(
-            "Learn ASP.NET Core",
-            "Build the first REST API."
-        ),
-        new(
-            "Build Task API",
-            "Practice controllers and HTTP endpoints."
-        ),
-        new(
-            "Practice C# LINQ",
-            "Learn how to query in-memory collections."
-        )
-    ];
-    
-    private readonly object _lock = new();
-
-    public IReadOnlyList<TaskItem> GetAll()
+    public async Task<IReadOnlyList<TaskItem>> GetAllAsync()
     {
-        lock (_lock)
-        {
-            return _taskItems.ToList();
-            
-        }
+        return await dbContext
+            .Tasks
+            .AsNoTracking()
+            .OrderByDescending(task => task.CreatedAt)
+            .ToListAsync();
     }
 
-    public TaskItem? GetById(Guid id)
+    public async Task<TaskItem?> GetByIdAsync(Guid id)
     {
-        lock (_lock)
-        {
-            return _taskItems.FirstOrDefault(taskItem => taskItem.Id == id);
-        }
+        var task = await dbContext
+            .Tasks
+            .AsNoTracking()
+            .FirstOrDefaultAsync(task => task.Id == id);
+        return task;
     }
 
-    public TaskItem Create(string title, string? description)
+    public async Task<TaskItem?> CreateAsync(TaskItem task)
     {
-        var taskItem = new TaskItem(title, description);
-        lock (_lock)
-        {
-            _taskItems.Add(taskItem);
-        }
-        return taskItem;
+        var createTask = new TaskItem(task.Title, task.Description);
+        dbContext.Tasks.Add(task);
+        await dbContext.SaveChangesAsync();
+        return createTask;
     }
 
-    public bool Update(Guid id, string title, string? description)
+    public async Task<bool> UpdateAsync(Guid id, string title, string? description)
     {
-        lock (_lock)
+        var task = await dbContext.Tasks.FirstOrDefaultAsync(task => task.Id == id);
+        if (task is null)
         {
-            var task = _taskItems.FirstOrDefault(item => item.Id == id);
-            if (task is null)
-            {
-                return false;
-            }
-            task.Update(title, description);
-            return true;
+            return false;
         }
+        task.Update(title, description);
+        await dbContext.SaveChangesAsync();
+        return true;
     }
 
-    public bool Delete(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        lock (_lock)
+        var task = await dbContext.Tasks
+            .FirstOrDefaultAsync(item => item.Id == id);
+        if (task is null)
         {
-           var tak = _taskItems.FirstOrDefault(item => item.Id == id);
-           if (tak is null)
-           {
-               return false;
-           }
-           return _taskItems.Remove(tak);
+            return false;
         }
+
+        dbContext.Tasks.Remove(task);
+        await dbContext.SaveChangesAsync();
+
+        return true;
     }
-    
 }

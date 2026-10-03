@@ -1,19 +1,26 @@
+using Microsoft.AspNetCore.Components.Web;
 using TaskApi.Domain;
 
 namespace TaskApi.Services;
-
 /// <summary>
 /// Provides application operations for task resources.
 /// </summary>
 public interface ITaskService
 {
-    IReadOnlyList<TaskItem> GetAll();
+    Task<IReadOnlyList<TaskItem>> GetAllAsync();
 
-    TaskItem? GetById(Guid id);
+    Task<TaskItem> GetByAsyncId(Guid id);
 
-    TaskItem Create(string title, string? description);
+    Task<TaskItem> CreateAsync(
+        string title,
+        string? description);
 
-    bool Update(Guid id, string title, string? description);
+    Task<bool> UpdateAsync(
+        Guid id,
+        string title,
+        string? description
+        );
 
-    bool Delete(Guid id);
+    Task<bool> DeleteAsync(Guid id);
+
 }
