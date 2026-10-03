@@ -9,11 +9,12 @@ namespace TaskApi.Services;
 /// Provides application operations for task resources using PostgreSQL.
 /// </summary>
 public sealed class TaskService(
-    AppDbContext dbContext) : ITaskService
+    AppDbContext dbContext,
+    ILogger<TaskService> logger) : ITaskService
 {
     public async Task<PagedResult<TaskItem>> GetAllAsync(TaskQuery query)
     {
-        IQueryable<TaskItem> tasks = dbContext.Tasks.AsNoTracking();
+        var tasks = dbContext.Tasks.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -31,13 +32,20 @@ public sealed class TaskService(
 
         tasks = query.Sort?.ToLowerInvariant() switch
         {
-            "title" => tasks.OrderBy(task => task.Title),
-            "title_desc" => tasks.OrderByDescending(task => task.Title),
-            "createdat" => tasks.OrderBy(task => task.CreatedAt),
-            "createdat_desc" => tasks.OrderByDescending(task => task.CreatedAt),
-            "completed" => tasks.OrderBy(task => task.IsCompleted),
-            "completed_desc" => tasks.OrderByDescending(task => task.IsCompleted),
-            _ => tasks.OrderByDescending(task => task.CreatedAt)
+            "title" => 
+                tasks.OrderBy(task => task.Title),
+            "title_desc" =>
+                tasks.OrderByDescending(task => task.Title),
+            "createdat" => 
+                tasks.OrderBy(task => task.CreatedAt),
+            "createdat_desc" => 
+                tasks.OrderByDescending(task => task.CreatedAt),
+            "completed" =>
+                tasks.OrderBy(task => task.IsCompleted),
+            "completed_desc" =>
+                tasks.OrderByDescending(task => task.IsCompleted),
+            _ => 
+                tasks.OrderByDescending(task => task.CreatedAt)
         };
 
         var page = Math.Max(query.Page, 1);
@@ -52,6 +60,17 @@ public sealed class TaskService(
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+        
+        logger.LogDebug(
+            "Retrieved tasks. Page: {Page}, PageSize: {PageSize}, " +
+            "TotalCount: {TotalCount}, SearchProvided: {SearchProvided}, " +
+            "CompletedFilter: {CompletedFilter}, Sort: {Sort}",
+            page,
+            pageSize,
+            totalCount,
+            !string.IsNullOrWhiteSpace(query.Search),
+            query.Completed,
+            query.Sort);
 
         return new PagedResult<TaskItem>
         {
@@ -76,6 +95,9 @@ public sealed class TaskService(
         var task = new TaskItem(title, description);
         dbContext.Tasks.Add(task);
         await dbContext.SaveChangesAsync();
+        
+            logger.LogInformation(
+                $"Task created. Id: {task.Id}, Title: {task.Title}, Description: {task.Description}", task.Id);
         return task;
     }
 
@@ -84,11 +106,19 @@ public sealed class TaskService(
         var task = await dbContext.Tasks.FirstOrDefaultAsync(task => task.Id == id);
         if (task is null)
         {
-            return false;
+            logger.LogWarning(
+                "Task update failed because task was not found. " +
+                "TaskId: {TaskId}",
+                id);
         }
 
         task.Update(title, description);
         await dbContext.SaveChangesAsync();
+        
+        logger.LogInformation(
+            "Task updated. TaskId: {TaskId}",
+            id);
+        
         return true;
     }
 
@@ -98,12 +128,17 @@ public sealed class TaskService(
             .FirstOrDefaultAsync(item => item.Id == id);
         if (task is null)
         {
-            return false;
+            logger.LogWarning(
+                "Task deletion failed because task was not found. " +
+                "TaskId: {TaskId}",
+                id);
         }
 
         dbContext.Tasks.Remove(task);
         await dbContext.SaveChangesAsync();
-
+        logger.LogInformation(
+            "Task deleted. TaskId: {TaskId}",
+            id);
         return true;
     }
 }
