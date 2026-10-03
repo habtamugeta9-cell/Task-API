@@ -20,10 +20,10 @@ public sealed class TasksController(
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<IEnumerable<TaskResponse>> GetTasks()
+    public async Task<ActionResult<IEnumerable<TaskResponse>>> GetTasks()
     {
-        var tasks = taskService.GetAll();
-        
+        var tasks = await taskService.GetAllAsync();
+
         var response = tasks
             .Select(TaskResponse.FromDomain)
             .ToList();
@@ -40,14 +40,15 @@ public sealed class TasksController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<TaskResponse> GetTaskById(Guid id)
+    public async Task<ActionResult<TaskResponse>> GetTaskById(Guid id)
     {
-        var task = taskService.GetById(id);
+        var task = await taskService.GetByIdAsync(id);
 
         if (task == null)
         {
             return NotFound();
         }
+
         return Ok(TaskResponse.FromDomain(task));
     }
 
@@ -59,18 +60,18 @@ public sealed class TasksController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<TaskResponse> CreateTask(CreateTaskRequest request)
+    public async Task<ActionResult<TaskResponse>> CreateTask(CreateTaskRequest request)
     {
         try
         {
-            var task = taskService.Create(
+            var task = await taskService.CreateAsync(
                 request.Title,
                 request.Description);
             var response = TaskResponse.FromDomain(task);
-            
+
             return CreatedAtAction(
-                nameof(GetTaskById), 
-                new { id = task.Id }, 
+                nameof(GetTaskById),
+                new { id = task.Id },
                 response);
         }
         catch (ArgumentException exception)
@@ -79,7 +80,6 @@ public sealed class TasksController(
             {
                 message = exception.Message,
                 parameters = exception.ParamName
-
             });
         }
     }
@@ -93,9 +93,9 @@ public sealed class TasksController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult UpdateTask(Guid id, UpdateTaskRequest request)
+    public async Task<IActionResult> UpdateTask(Guid id, UpdateTaskRequest request)
     {
-        var existingTask = taskService.GetById(id);
+        var existingTask = await taskService.GetByIdAsync(id);
         if (existingTask is null)
         {
             return NotFound();
@@ -103,7 +103,7 @@ public sealed class TasksController(
 
         try
         {
-            taskService.Update(
+            await taskService.UpdateAsync(
                 id,
                 request.Title,
                 request.Description);
@@ -128,13 +128,14 @@ public sealed class TasksController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult DeleteTask(Guid id)
+    public async Task<IActionResult> DeleteTask(Guid id)
     {
-        var task = taskService.Delete(id);
-        if (!task)
+        var taskDeleted = await taskService.DeleteAsync(id);
+        if (!taskDeleted)
         {
             return NotFound();
         }
+
         return NoContent();
     }
 }

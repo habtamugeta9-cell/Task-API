@@ -10,7 +10,7 @@ namespace TaskApi.Services;
 /// Provides application operations for task resources using PostgreSQL.
 /// </summary>
 public sealed class TaskService(
-    AppDbContext dbContext): ITaskService
+    AppDbContext dbContext) : ITaskService
 {
     public async Task<IReadOnlyList<TaskItem>> GetAllAsync()
     {
@@ -23,19 +23,18 @@ public sealed class TaskService(
 
     public async Task<TaskItem?> GetByIdAsync(Guid id)
     {
-        var task = await dbContext
+        return await dbContext
             .Tasks
             .AsNoTracking()
             .FirstOrDefaultAsync(task => task.Id == id);
-        return task;
     }
 
-    public async Task<TaskItem?> CreateAsync(TaskItem task)
+    public async Task<TaskItem> CreateAsync(string title, string? description)
     {
-        var createTask = new TaskItem(task.Title, task.Description);
+        var task = new TaskItem(title, description);
         dbContext.Tasks.Add(task);
         await dbContext.SaveChangesAsync();
-        return createTask;
+        return task;
     }
 
     public async Task<bool> UpdateAsync(Guid id, string title, string? description)
@@ -45,6 +44,7 @@ public sealed class TaskService(
         {
             return false;
         }
+
         task.Update(title, description);
         await dbContext.SaveChangesAsync();
         return true;

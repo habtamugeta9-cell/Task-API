@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "uAhEpJ/Dq1g=",
+  "dgSpecHash": "tkWk1rgiyqg=",
   "success": true,
   "projectFilePath": "/home/habte/Projects/TaskApi/TaskApi.csproj",
   "expectedPackageFiles": [
@@ -33,15 +33,5 @@
     "/home/habte/.nuget/packages/system.composition.runtime/9.0.0/system.composition.runtime.9.0.0.nupkg.sha512",
     "/home/habte/.nuget/packages/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Error occurred while getting package vulnerability data: Resource temporarily unavailable (api.nuget.org:443)",
-      "projectPath": "/home/habte/Projects/TaskApi/TaskApi.csproj",
-      "warningLevel": 1,
-      "filePath": "/home/habte/Projects/TaskApi/TaskApi.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

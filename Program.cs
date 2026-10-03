@@ -15,7 +15,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddScoped<ITaskService, TaskService>();
-builder.Services.AddSingleton<ITaskService, TaskService>();
 
 
 var app = builder.Build();

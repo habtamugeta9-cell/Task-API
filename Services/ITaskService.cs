@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components.Web;
 using TaskApi.Domain;
 
 namespace TaskApi.Services;
@@ -9,7 +8,7 @@ public interface ITaskService
 {
     Task<IReadOnlyList<TaskItem>> GetAllAsync();
 
-    Task<TaskItem> GetByAsyncId(Guid id);
+    Task<TaskItem?> GetByIdAsync(Guid id);
 
     Task<TaskItem> CreateAsync(
         string title,
@@ -18,9 +17,7 @@ public interface ITaskService
     Task<bool> UpdateAsync(
         Guid id,
         string title,
-        string? description
-        );
+        string? description);
 
     Task<bool> DeleteAsync(Guid id);
-
 }
