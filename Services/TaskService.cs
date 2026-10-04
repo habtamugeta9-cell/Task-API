@@ -10,7 +10,7 @@ namespace TaskApi.Services;
 /// </summary>
 public sealed class TaskService(
     AppDbContext dbContext,
-    ILogger<TaskService> logger) : ITaskService
+    ILogger<ITaskService> logger) : ITaskService
 {
     public async Task<PagedResult<TaskItem>> GetAllAsync(TaskQuery query)
     {
@@ -32,20 +32,13 @@ public sealed class TaskService(
 
         tasks = query.Sort?.ToLowerInvariant() switch
         {
-            "title" => 
-                tasks.OrderBy(task => task.Title),
-            "title_desc" =>
-                tasks.OrderByDescending(task => task.Title),
-            "createdat" => 
-                tasks.OrderBy(task => task.CreatedAt),
-            "createdat_desc" => 
-                tasks.OrderByDescending(task => task.CreatedAt),
-            "completed" =>
-                tasks.OrderBy(task => task.IsCompleted),
-            "completed_desc" =>
-                tasks.OrderByDescending(task => task.IsCompleted),
-            _ => 
-                tasks.OrderByDescending(task => task.CreatedAt)
+            "title" => tasks.OrderBy(task => task.Title),
+            "title_desc" => tasks.OrderByDescending(task => task.Title),
+            "created_at" => tasks.OrderBy(task => task.CreatedAt),
+            "created_at_desc" => tasks.OrderByDescending(task => task.CreatedAt),
+            "completed" => tasks.OrderBy(task => task.IsCompleted),
+            "completed_desc" => tasks.OrderByDescending(task => task.IsCompleted),
+            _ => tasks.OrderByDescending(task => task.CreatedAt)
         };
 
         var page = Math.Max(query.Page, 1);
@@ -60,7 +53,7 @@ public sealed class TaskService(
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-        
+
         logger.LogDebug(
             "Retrieved tasks. Page: {Page}, PageSize: {PageSize}, " +
             "TotalCount: {TotalCount}, SearchProvided: {SearchProvided}, " +
@@ -81,7 +74,7 @@ public sealed class TaskService(
             TotalPages = totalPages,
         };
     }
-    
+
     public async Task<TaskItem?> GetByIdAsync(Guid id)
     {
         return await dbContext
@@ -95,9 +88,13 @@ public sealed class TaskService(
         var task = new TaskItem(title, description);
         dbContext.Tasks.Add(task);
         await dbContext.SaveChangesAsync();
-        
-            logger.LogInformation(
-                $"Task created. Id: {task.Id}, Title: {task.Title}, Description: {task.Description}", task.Id);
+
+        logger.LogInformation(
+            "Task created. Id: {TaskId}, Title: {Title}, Description: {Description}",
+            task.Id,
+            task.Title,
+            task.Description);
+
         return task;
     }
 
@@ -107,18 +104,18 @@ public sealed class TaskService(
         if (task is null)
         {
             logger.LogWarning(
-                "Task update failed because task was not found. " +
-                "TaskId: {TaskId}",
+                "Task update failed because task was not found. TaskId: {TaskId}",
                 id);
+            return false;
         }
 
         task.Update(title, description);
         await dbContext.SaveChangesAsync();
-        
+
         logger.LogInformation(
             "Task updated. TaskId: {TaskId}",
             id);
-        
+
         return true;
     }
 
@@ -126,19 +123,22 @@ public sealed class TaskService(
     {
         var task = await dbContext.Tasks
             .FirstOrDefaultAsync(item => item.Id == id);
+
         if (task is null)
         {
             logger.LogWarning(
-                "Task deletion failed because task was not found. " +
-                "TaskId: {TaskId}",
+                "Task deletion failed because task was not found. TaskId: {TaskId}",
                 id);
+            return false;
         }
 
         dbContext.Tasks.Remove(task);
         await dbContext.SaveChangesAsync();
+
         logger.LogInformation(
             "Task deleted. TaskId: {TaskId}",
             id);
+
         return true;
     }
 }
