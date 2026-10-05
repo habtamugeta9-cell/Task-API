@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskApi.DTOs;
 using TaskApi.Services;
@@ -8,6 +9,7 @@ namespace TaskApi.Controllers;
 /// Provides HTTP endpoints for managing task resources.
 /// </summary>
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public sealed class TasksController(
     ITaskService taskService) : ControllerBase

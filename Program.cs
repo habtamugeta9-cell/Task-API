@@ -1,25 +1,22 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TaskApi.Data;
+using TaskApi.Domain;
 using TaskApi.Services;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder
     .Services
     .AddControllers();
+
 builder
     .Services
-    .AddOpenApi(options =>
-    {
-        options.AddDocumentTransformer((document, context, cancellationToken) =>
-        {
-            document.Info ??= new();
-            document.Info.Title = "Task API";
-            document.Info.Version = "v1";
-            return Task.CompletedTask;
-        });
-    });
+    .AddOpenApi();
+
 builder
     .Services
     .AddDbContext<AppDbContext>(
@@ -28,49 +25,126 @@ builder
             options.UseNpgsql(
                 builder
                     .Configuration
-                    .GetConnectionString("TaskApiDatabase")
-                );
+                    .GetConnectionString(
+                        "TaskApiDatabase"));
         });
 
 builder
     .Services
-    .AddScoped<ITaskService, TaskService>();
+    .Configure<JwtOptions>(
+        builder.Configuration.GetSection(
+            JwtOptions.SectionName));
+
+var jwtOptions =
+    builder.Configuration
+        .GetSection(JwtOptions.SectionName)
+        .Get<JwtOptions>()
+    ?? throw new InvalidOperationException(
+        "JWT configuration is missing.");
+
+if (string.IsNullOrWhiteSpace(jwtOptions.Key))
+{
+    throw new InvalidOperationException(
+        "JWT key is missing.");
+}
+
 builder
     .Services
-    .AddScoped<ITaskQueryBuilder, TaskQueryBuilder>();
+    .AddAuthentication(
+        JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(
+        options =>
+        {
+            options.TokenValidationParameters =
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(
+                                jwtOptions.Key)),
+
+                    ClockSkew = TimeSpan.Zero
+                };
+        });
+
+builder
+    .Services
+    .AddAuthorization();
+
+builder
+    .Services
+    .AddScoped<ITaskService, TaskService>();
+
+builder
+    .Services
+    .AddScoped<
+        ITaskQueryBuilder,
+        TaskQueryBuilder>();
+
+builder
+    .Services
+    .AddScoped<
+        IAuthService,
+        AuthService>();
+
+builder
+    .Services
+    .AddScoped<
+        IJwtTokenService,
+        JwtTokenService>();
+
+builder
+    .Services
+    .AddScoped<
+        IPasswordHasher<User>,
+        PasswordHasher<User>>();
 
 builder
     .Services
     .AddProblemDetails(
         options =>
         {
-            options.CustomizeProblemDetails = context =>
-            {
-                context
-                    .ProblemDetails
-                    .Extensions["traceId"] = context
-                    .HttpContext
-                    .TraceIdentifier;
-            };
-            
+            options.CustomizeProblemDetails =
+                context =>
+                {
+                    context
+                        .ProblemDetails
+                        .Extensions["traceId"] =
+                        context
+                            .HttpContext
+                            .TraceIdentifier;
+                };
         });
 
 builder
     .Services
-    .AddExceptionHandler<TaskApi.Errors.GlobalExceptionHandler>();
-
-
+    .AddExceptionHandler<
+        TaskApi.Errors.GlobalExceptionHandler>();
 
 var app = builder.Build();
-
-app.UseExceptionHandler();
-app.UseStatusCodePages();
-app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseHttpsRedirection();
+
+app.UseExceptionHandler();
+
+app.UseStatusCodePages();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

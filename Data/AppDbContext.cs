@@ -11,6 +11,7 @@ public sealed class AppDbContext(
     ) : DbContext(options)
 {
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,6 +41,30 @@ public sealed class AppDbContext(
                 entity.Property(task => task.UpdatedAt);
             }
         );
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToTable("users");
+
+            entity.HasKey(user => user.Id);
+
+            entity.Property(user => user.Id)
+                .ValueGeneratedNever();
+
+            entity.Property(user => user.Email)
+                .IsRequired()
+                .HasMaxLength(320);
+
+            entity.HasIndex(user => user.Email)
+                .IsUnique();
+            entity.Property(user => user.PasswordHash)
+                .IsRequired();
+            entity.Property(user => user.CreatedAt)
+                .IsRequired();
+            entity.Property(user => user.RefreshTokenHash)
+                .HasMaxLength(128);
+
+        });
 
     }
 }

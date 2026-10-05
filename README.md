@@ -972,7 +972,7 @@ Update this checklist as development progresses.
 [✅] 12 — Logging
 [✅] 13 — Unit Testing
 [✅] 14 — Integration Testing
-[ ] 15 — JWT Authentication
+[✅] 15 — JWT Authentication
 [ ] 16 — Authorization and Task Ownership
 [ ] 17 — Advanced API Features
 [ ] 18 — Production Configuration
@@ -1117,11 +1117,11 @@ The structure will evolve during development rather than being created all at on
 
 # Current Status
 
-**Current milestone:** COMMIT 14 — Integration Testing
+**Current milestone:** COMMIT 15 — JWT Authentication
 
-**Next milestone:** COMMIT 15 — JWT Authentication
+**Next milestone:** COMMIT 16 — Authorization and Task Ownership
 
-COMMIT 14 is complete. The project now includes end-to-end HTTP coverage for listing, creating, validating, updating, and deleting tasks using a test server backed by an in-memory database. The application also includes domain validation, structured logging, global error handling, and query validation to keep the API behavior consistent and professional at this stage.
+COMMIT 15 is complete. The API now supports user registration, password hashing, login, JWT access-token validation, refresh-token rotation, and protected task endpoints. Integration tests cover authentication flows and verify that anonymous task requests are rejected.
 
 ### Verified project quality at this stage
 
