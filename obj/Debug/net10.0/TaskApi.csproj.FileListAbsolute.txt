@@ -8,7 +8,9 @@
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/TaskApi.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/TaskApi.pdb
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Humanizer.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.AspNetCore.OpenApi.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.Bcl.Cryptography.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.Build.Framework.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.CodeAnalysis.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.CodeAnalysis.CSharp.dll
@@ -21,6 +23,12 @@
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.EntityFrameworkCore.Design.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.EntityFrameworkCore.Relational.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.Extensions.DependencyModel.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.IdentityModel.Abstractions.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.IdentityModel.Logging.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.IdentityModel.Tokens.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.OpenApi.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Microsoft.VisualStudio.SolutionPersistence.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/Mono.TextTemplating.dll
@@ -33,6 +41,7 @@
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/System.Composition.Hosting.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/System.Composition.Runtime.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/System.Composition.TypedParts.dll
+/home/habte/Projects/TaskApi/bin/Debug/net10.0/System.IdentityModel.Tokens.Jwt.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/cs/Microsoft.CodeAnalysis.resources.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/de/Microsoft.CodeAnalysis.resources.dll
 /home/habte/Projects/TaskApi/bin/Debug/net10.0/es/Microsoft.CodeAnalysis.resources.dll
