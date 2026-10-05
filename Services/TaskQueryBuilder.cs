@@ -52,6 +52,8 @@ public sealed class TaskQueryBuilder : ITaskQueryBuilder
         {
             "title" => tasks.OrderBy(task => task.Title),
             "title_desc" => tasks.OrderByDescending(task => task.Title),
+            "createdat" => tasks.OrderBy(task => task.CreatedAt),
+            "createdat_desc" => tasks.OrderByDescending(task => task.CreatedAt),
             "created_at" => tasks.OrderBy(task => task.CreatedAt),
             "created_at_desc" => tasks.OrderByDescending(task => task.CreatedAt),
             "completed" => tasks.OrderBy(task => task.IsCompleted),

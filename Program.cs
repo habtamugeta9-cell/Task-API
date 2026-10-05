@@ -10,7 +10,16 @@ builder
     .AddControllers();
 builder
     .Services
-    .AddOpenApi();
+    .AddOpenApi(options =>
+    {
+        options.AddDocumentTransformer((document, context, cancellationToken) =>
+        {
+            document.Info ??= new();
+            document.Info.Title = "Task API";
+            document.Info.Version = "v1";
+            return Task.CompletedTask;
+        });
+    });
 builder
     .Services
     .AddDbContext<AppDbContext>(
@@ -54,15 +63,16 @@ builder
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.UseHttpsRedirection();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-} 
+}
 
-app.UseHttpsRedirection();
 app.MapControllers();
-app.UseExceptionHandler();
-app.UseStatusCodePages();
 
 app.Run();
 

@@ -1,4 +1,7 @@
+using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using TaskApi.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
 using TaskApi.Data;
 using TaskApi.DTOs;
@@ -24,6 +27,45 @@ public sealed class TaskServiceTests
             dbContext,
             NullLogger<TaskService>.Instance,
             new TaskQueryBuilder());
+    }
+
+    [Theory]
+    [InlineData("createdAt", nameof(Queryable.OrderBy))]
+    [InlineData("createdAt_desc", nameof(Queryable.OrderByDescending))]
+    public void ApplySorting_ShouldSupportDocumentedCreatedAtValues(
+        string sort,
+        string expectedMethod)
+    {
+        var query = new TaskQueryBuilder().ApplySorting(
+            Array.Empty<TaskItem>().AsQueryable(),
+            sort);
+
+        var orderExpression = Assert.IsAssignableFrom<MethodCallExpression>(query.Expression);
+
+        Assert.Equal(expectedMethod, orderExpression.Method.Name);
+    }
+
+    [Fact]
+    public void TaskQuery_ShouldRejectInvalidPageAndSortValues()
+    {
+        var query = new TaskQuery
+        {
+            Page = 0,
+            PageSize = 0,
+            Sort = "unknown"
+        };
+
+        var validationResults = new List<ValidationResult>();
+        var isValid = Validator.TryValidateObject(
+            query,
+            new ValidationContext(query),
+            validationResults,
+            validateAllProperties: true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, result => result.MemberNames.Contains(nameof(TaskQuery.Page)));
+        Assert.Contains(validationResults, result => result.MemberNames.Contains(nameof(TaskQuery.PageSize)));
+        Assert.Contains(validationResults, result => result.MemberNames.Contains(nameof(TaskQuery.Sort)));
     }
 
     [Fact]

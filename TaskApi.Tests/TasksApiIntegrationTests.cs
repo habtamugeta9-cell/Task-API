@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -76,6 +78,36 @@ public sealed class TasksApiIntegrationTests(TaskApiWebApplicationFactory factor
     }
 
     [Fact]
+    public async Task GetAll_ShouldHonorCreatedAtSortAlias()
+    {
+        ResetDatabase();
+
+        await _client.PostAsJsonAsync("/api/tasks", new CreateTaskRequest
+        {
+            Title = "Zebra",
+            Description = "Latest task"
+        }, TestContext.Current.CancellationToken);
+
+        await _client.PostAsJsonAsync("/api/tasks", new CreateTaskRequest
+        {
+            Title = "Alpha",
+            Description = "Earliest task"
+        }, TestContext.Current.CancellationToken);
+
+        var response = await _client.GetAsync("/api/tasks?sort=createdAt", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<PagedTaskResponse>(
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.NotNull(body);
+        Assert.Equal(2, body.Items.Count);
+        Assert.Contains(body.Items, item => item.Title == "Alpha");
+        Assert.Contains(body.Items, item => item.Title == "Zebra");
+    }
+
+    [Fact]
     public async Task Post_ShouldCreateTaskAndReturn201Created()
     {
         ResetDatabase();
@@ -103,7 +135,7 @@ public sealed class TasksApiIntegrationTests(TaskApiWebApplicationFactory factor
     }
 
     [Fact]
-    public async Task Post_ShouldRejectInvalidTaskTitle()
+    public async Task Post_ShouldReturnProblemDetails_WhenTaskTitleIsInvalid()
     {
         ResetDatabase();
 
@@ -116,6 +148,16 @@ public sealed class TasksApiIntegrationTests(TaskApiWebApplicationFactory factor
         var response = await _client.PostAsJsonAsync("/api/tasks", request, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>(
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.NotNull(problem);
+        Assert.Equal(StatusCodes.Status400BadRequest, problem.Status);
+        Assert.Equal("One or more validation errors occurred.", problem.Title);
+        Assert.Contains("errors", problem.Extensions.Keys);
+        Assert.Contains("traceId", problem.Extensions.Keys);
     }
 
     [Fact]

@@ -30,7 +30,9 @@ public sealed class GlobalExceptionHandler(
             Title = statusCode == StatusCodes.Status400BadRequest
             ? "Bad Request"
             : "Internal Server Error",
-            Detail = exception.Message
+            Detail = statusCode == StatusCodes.Status400BadRequest
+                ? exception.Message
+                : "An unexpected error occurred."
         };
         
         httpContext.Response.StatusCode = statusCode;

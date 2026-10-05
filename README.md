@@ -969,11 +969,11 @@ Update this checklist as development progresses.
 [✅] 06 — Data Transfer Objects
 [✅] 07 — Request Validation
 [✅] 08 — Entity Framework Core and PostgreSQL
-[ ] 09 — Database Persistence
-[ ] 10 — Search, Filtering, Sorting, Pagination
-[ ] 11 — Global Error Handling
-[ ] 12 — Logging
-[ ] 13 — Unit Testing
+[✅] 09 — Database Persistence
+[✅] 10 — Search, Filtering, Sorting, Pagination
+[✅] 11 — Global Error Handling
+[✅] 12 — Logging
+[✅] 13 — Unit Testing
 [✅] 14 — Integration Testing
 [ ] 15 — JWT Authentication
 [ ] 16 — Authorization and Task Ownership

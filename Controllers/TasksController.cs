@@ -57,28 +57,17 @@ public sealed class TasksController(
     public async Task<ActionResult<TaskResponse>> Create(
         CreateTaskRequest request)
     {
-        try
-        {
-            var task = await taskService.CreateAsync(
-                request.Title,
-                request.Description);
+        var task = await taskService.CreateAsync(
+            request.Title,
+            request.Description);
 
-            var response =
-                TaskResponse.FromDomain(task);
+        var response =
+            TaskResponse.FromDomain(task);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = task.Id },
-                response);
-        }
-        catch (ArgumentException exception)
-        {
-            return BadRequest(new
-            {
-                message = exception.Message,
-                parameter = exception.ParamName
-            });
-        }
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = task.Id },
+            response);
     }
 
     /// <summary>
@@ -92,31 +81,18 @@ public sealed class TasksController(
         Guid id,
         UpdateTaskRequest request)
     {
-        try
-        {
-            var updated =
-                await taskService.UpdateAsync(
-                    id,
-                    request.Title,
-                    request.Description);
-            
-            //I think i need more validation here; I DONT THINK NOT FOUND IS ENOUGH.
+        var updated =
+            await taskService.UpdateAsync(
+                id,
+                request.Title,
+                request.Description);
 
-            if (!updated)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-        catch (ArgumentException exception)
+        if (!updated)
         {
-            return BadRequest(new
-            {
-                message = exception.Message,
-                parameter = exception.ParamName
-            });
+            return NotFound();
         }
+
+        return NoContent();
     }
 
     /// <summary>
