@@ -1,7 +1,7 @@
 using TaskApi.Domain;
 using TaskApi.DTOs;
 
-namespace TaskApi.Services;
+namespace TaskApi.Services.Tasks;
 
 public interface ITaskQueryBuilder
 {

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskApi.Domain;
 using TaskApi.DTOs;
 
-namespace TaskApi.Services;
+namespace TaskApi.Services.Tasks;
 
 public sealed class TaskQueryBuilder : ITaskQueryBuilder
 {

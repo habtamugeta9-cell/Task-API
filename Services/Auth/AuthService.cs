@@ -5,7 +5,7 @@ using TaskApi.Data;
 using TaskApi.Domain;
 using TaskApi.DTO.Auth;
 
-namespace TaskApi.Services;
+namespace TaskApi.Services.Auth;
 
 public sealed class AuthService(
     AppDbContext dbContext,

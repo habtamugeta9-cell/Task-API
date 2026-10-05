@@ -16,31 +16,40 @@ public sealed class AppDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TaskItem>(entity =>
-            {
-                entity.ToTable("tasks");
+        {
+            entity.ToTable("tasks");
 
-                entity.HasKey(task => task.Id);
+            entity.HasKey(task => task.Id);
 
-                entity.Property(task => task.Id)
-                    .ValueGeneratedNever();
+            entity.Property(task => task.Id)
+                .ValueGeneratedNever();
 
-                entity.Property(task => task.Title)
-                    .IsRequired()
-                    .HasMaxLength(200);
+            entity.Property(task => task.UserId)
+                .IsRequired();
 
-                entity.Property(task => task.Description)
-                    .HasMaxLength(2000);
+            entity.HasIndex(task => task.UserId);
 
-                entity.Property(task => task.IsCompleted)
-                    .HasDefaultValue(false)
-                    .IsRequired();
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(task => task.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-                entity.Property(task => task.CreatedAt)
-                    .IsRequired();
+            entity.Property(task => task.Title)
+                .IsRequired()
+                .HasMaxLength(200);
 
-                entity.Property(task => task.UpdatedAt);
-            }
-        );
+            entity.Property(task => task.Description)
+                .HasMaxLength(2000);
+
+            entity.Property(task => task.IsCompleted)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            entity.Property(task => task.CreatedAt)
+                .IsRequired();
+
+            entity.Property(task => task.UpdatedAt);
+        });
 
         modelBuilder.Entity<User>(entity =>
         {
@@ -57,14 +66,19 @@ public sealed class AppDbContext(
 
             entity.HasIndex(user => user.Email)
                 .IsUnique();
+
             entity.Property(user => user.PasswordHash)
                 .IsRequired();
+
             entity.Property(user => user.CreatedAt)
                 .IsRequired();
+
             entity.Property(user => user.RefreshTokenHash)
                 .HasMaxLength(128);
 
+            entity.Property(user => user.Role)
+                .IsRequired()
+                .HasMaxLength(20);
         });
-
     }
 }

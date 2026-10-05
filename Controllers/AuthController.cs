@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskApi.DTO.Auth;
-using TaskApi.Services;
+using TaskApi.Services.Auth;
 
 namespace TaskApi.Controllers;
 

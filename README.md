@@ -20,15 +20,37 @@ This repository demonstrates how a small but real API evolves from a simple CRUD
 
 ```text
 TaskApi
+├── Authorization
+│   ├── Policies
+│   └── Roles
 ├── Controllers
+│   ├── AuthController
 │   └── TasksController
 ├── Services
-│   ├── ITaskService
-│   ├── TaskService
-│   └── TaskQueryBuilder
+│   ├── CurrentUserService
+│   ├── ICurrentUserService
+│   ├── Auth
+│   │   ├── AuthService
+│   │   ├── IAuthService
+│   │   ├── IJwtTokenService
+│   │   ├── JwtOptions
+│   │   └── JwtTokenService
+│   └── Tasks
+│       ├── ITaskQueryBuilder
+│       ├── ITaskService
+│       ├── TaskQueryBuilder
+│       └── TaskService
+├── Queries
+│   └── QueryService
 ├── Domain
-│   └── TaskItem
+│   ├── TaskItem
+│   └── User
 ├── DTOs
+│   ├── Auth
+│   │   ├── AuthResponse
+│   │   ├── LoginRequest
+│   │   ├── RefreshRequest
+│   │   └── RegisterRequest
 │   ├── CreateTaskRequest
 │   ├── UpdateTaskRequest
 │   ├── TaskResponse
@@ -83,7 +105,7 @@ TaskApi
 
 ## Core Features
 
-The project currently covers the following capabilities through COMMIT 14:
+The project currently covers the following capabilities through COMMIT 16:
 
 ### Task Management
 
@@ -101,6 +123,16 @@ The project currently covers the following capabilities through COMMIT 14:
 * Sort by supported fields
 * Paginate results with metadata
 * Validate invalid page, page size, and sort options
+
+### Authentication and Authorization
+
+* Register and authenticate users with JWT access tokens
+* Rotate refresh tokens
+* Assign new accounts the `User` role by default
+* Associate tasks with the authenticated user
+* Restrict list, read, update, and delete operations to task owners
+* Allow administrators to access tasks across owners
+* Protect `GET /api/tasks/all` with the admin-only policy
 
 ### Reliability and Quality
 
@@ -128,13 +160,14 @@ The API currently supports the following endpoints:
 
 ```http
 GET    /api/tasks
+GET    /api/tasks/all
 GET    /api/tasks/{id}
 POST   /api/tasks
 PUT    /api/tasks/{id}
 DELETE /api/tasks/{id}
 ```
 
-The project remains intentionally scoped to the COMMIT 14 milestone, so authentication and authorization are not yet implemented. That work is intentionally reserved for later roadmap milestones.
+All task endpoints require a valid bearer token. `GET /api/tasks` returns only the caller's tasks; `GET /api/tasks/all` is restricted to administrators. Requests for another user's task return `404 Not Found` to avoid revealing whether the task exists.
 
 ---
 
@@ -720,6 +753,10 @@ git commit -m "feat: add jwt authentication"
 * Authorization policies
 * Prevent unauthorized task access
 
+### Migration note
+
+The ownership migration requires an empty `tasks` table because existing tasks do not contain enough information to infer their owners. It stops with an explicit error when task rows exist; back up the database and assign those tasks to users before retrying. Existing users are assigned the `User` role during migration.
+
 ### Commit
 
 ```bash
@@ -973,7 +1010,7 @@ Update this checklist as development progresses.
 [✅] 13 — Unit Testing
 [✅] 14 — Integration Testing
 [✅] 15 — JWT Authentication
-[ ] 16 — Authorization and Task Ownership
+[✅] 16 — Authorization and Task Ownership
 [ ] 17 — Advanced API Features
 [ ] 18 — Production Configuration
 [ ] 19 — Docker and Docker Compose
@@ -1097,6 +1134,9 @@ TaskApi/
 ├── Domain/
 ├── DTOs/
 ├── Services/
+│   ├── Auth/
+│   └── Tasks/
+├── Queries/
 ├── Data/
 ├── Middleware/
 ├── Tests/
@@ -1117,19 +1157,32 @@ The structure will evolve during development rather than being created all at on
 
 # Current Status
 
-**Current milestone:** COMMIT 15 — JWT Authentication
+**Current milestone:** COMMIT 16 — Authorization and Task Ownership
 
-**Next milestone:** COMMIT 16 — Authorization and Task Ownership
+**Next milestone:** COMMIT 17 — Advanced API Features
 
-COMMIT 15 is complete. The API now supports user registration, password hashing, login, JWT access-token validation, refresh-token rotation, and protected task endpoints. Integration tests cover authentication flows and verify that anonymous task requests are rejected.
+COMMIT 16 is complete. The API now includes user roles, task ownership, current-user resolution from JWT claims, owner-scoped task queries, and an admin-only authorization policy that prevents unauthorized access to other users' tasks.
 
 ### Verified project quality at this stage
 
 * Task CRUD flow is covered end-to-end
 * Validation rules are enforced consistently
 * Search, filtering, and pagination behavior is tested
+* User roles are part of the identity model
+* Task ownership is enforced in the service layer
+* Owner-based authorization prevents unauthorized reads, updates, and deletes
+* Admin authorization policy allows cross-user task visibility when explicitly allowed
 * Global exception handling returns problem details without leaking internal details
-* The project stays within the planned milestone boundary and avoids jumping ahead into authentication features
+
+### Security features included
+
+* User roles
+* Task ownership
+* Owner-based authorization
+* Admin authorization policy
+* User-isolated task queries
+* New registrations cannot choose an administrative role
+* The project stays within the planned milestone boundary without adding Commit 17 features
 
 ---
 

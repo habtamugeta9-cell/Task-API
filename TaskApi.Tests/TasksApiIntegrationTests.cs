@@ -67,13 +67,15 @@ public sealed class TasksApiIntegrationTests(TaskApiWebApplicationFactory factor
         dbContext.Database.EnsureCreated();
     }
 
-    private async Task AuthenticateAsync()
+    private async Task<string> AuthenticateAsync(string? email = null)
     {
+        email ??= $"{Guid.NewGuid():N}@example.com";
+
         var response = await _client.PostAsJsonAsync(
             "/api/auth/register",
             new
             {
-                email = $"{Guid.NewGuid():N}@example.com",
+                email,
                 password = "Password123!"
             },
             TestContext.Current.CancellationToken);
@@ -88,6 +90,8 @@ public sealed class TasksApiIntegrationTests(TaskApiWebApplicationFactory factor
             new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Bearer",
                 authResponse.AccessToken);
+
+        return authResponse.AccessToken;
     }
 
     [Fact]
@@ -316,5 +320,112 @@ public sealed class TasksApiIntegrationTests(TaskApiWebApplicationFactory factor
 
         var fetchResponse = await _client.GetAsync($"/api/tasks/{createdTask.Id}", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.NotFound, fetchResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task TaskEndpoints_ShouldHideAnotherUsersTasks()
+    {
+        ResetDatabase();
+        var aliceToken = await AuthenticateAsync();
+        var forgedOwnerId = Guid.NewGuid();
+
+        var createResponse = await _client.PostAsJsonAsync(
+            "/api/tasks",
+            new { Title = "Alice task", UserId = forgedOwnerId },
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var aliceTask = await createResponse.Content.ReadFromJsonAsync<TaskResponse>(
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(aliceTask);
+        Assert.NotEqual(Guid.Empty, aliceTask.UserId);
+        Assert.NotEqual(forgedOwnerId, aliceTask.UserId);
+
+        await AuthenticateAsync();
+        var listResponse = await _client.GetAsync(
+            "/api/tasks",
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, listResponse.StatusCode);
+        var bobTasks = await listResponse.Content.ReadFromJsonAsync<PagedTaskResponse>(
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(bobTasks);
+        Assert.Equal(0, bobTasks.TotalCount);
+
+        var getResponse = await _client.GetAsync(
+            $"/api/tasks/{aliceTask.Id}",
+            TestContext.Current.CancellationToken);
+        var updateResponse = await _client.PutAsJsonAsync(
+            $"/api/tasks/{aliceTask.Id}",
+            new { Title = "Attempted update", Description = (string?)null },
+            TestContext.Current.CancellationToken);
+        var deleteResponse = await _client.DeleteAsync(
+            $"/api/tasks/{aliceTask.Id}",
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, updateResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                aliceToken);
+        var ownerResponse = await _client.GetAsync(
+            $"/api/tasks/{aliceTask.Id}",
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, ownerResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task AdminTasksEndpoint_ShouldRequireAdminRoleAndReturnAllTasks()
+    {
+        ResetDatabase();
+        await AuthenticateAsync();
+        var createResponse = await _client.PostAsJsonAsync(
+            "/api/tasks",
+            new CreateTaskRequest { Title = "Alice task" },
+            TestContext.Current.CancellationToken);
+        var aliceTask = await createResponse.Content.ReadFromJsonAsync<TaskResponse>(
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(aliceTask);
+
+        var adminEmail = $"{Guid.NewGuid():N}@example.com";
+        await AuthenticateAsync(adminEmail);
+        var forbiddenResponse = await _client.GetAsync(
+            "/api/tasks/all",
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.Forbidden, forbiddenResponse.StatusCode);
+
+        using (var scope = factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var adminUser = await dbContext.Users.SingleAsync(
+                user => user.Email == adminEmail,
+                TestContext.Current.CancellationToken);
+            adminUser.PromoteToAdmin();
+            await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        var loginResponse = await _client.PostAsJsonAsync(
+            "/api/auth/login",
+            new LoginRequest(adminEmail, "Password123!"),
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        var adminAuth = await loginResponse.Content.ReadFromJsonAsync<AuthResponse>(
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(adminAuth);
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                adminAuth.AccessToken);
+
+        var allTasksResponse = await _client.GetAsync(
+            "/api/tasks/all",
+            TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, allTasksResponse.StatusCode);
+        var allTasks = await allTasksResponse.Content.ReadFromJsonAsync<PagedTaskResponse>(
+            cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(allTasks);
+        Assert.Equal(1, allTasks.TotalCount);
+        Assert.Equal(aliceTask.UserId, allTasks.Items.Single().UserId);
     }
 }

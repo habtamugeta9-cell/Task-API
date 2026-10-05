@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TaskApi.Authorization;
 using TaskApi.Data;
 using TaskApi.Domain;
 using TaskApi.Services;
+using TaskApi.Services.Auth;
+using TaskApi.Services.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,7 +80,26 @@ builder
 
 builder
     .Services
-    .AddAuthorization();
+    .AddHttpContextAccessor();
+
+builder
+    .Services
+    .AddScoped<
+        ICurrentUserService,
+        CurrentUserService>();
+
+builder
+    .Services
+    .AddAuthorization(options =>
+    {
+        options.AddPolicy(
+            Policies.AdminOnly,
+            policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole(Roles.Admin);
+            });
+    });
 
 builder
     .Services

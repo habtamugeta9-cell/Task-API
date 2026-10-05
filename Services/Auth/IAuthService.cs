@@ -1,6 +1,6 @@
 using TaskApi.DTO.Auth;
 
-namespace TaskApi.Services;
+namespace TaskApi.Services.Auth;
 
 public interface IAuthService
 {

@@ -1,6 +1,6 @@
 using TaskApi.Domain;
 
-namespace TaskApi.Services;
+namespace TaskApi.Services.Auth;
 
 public interface IJwtTokenService
 {

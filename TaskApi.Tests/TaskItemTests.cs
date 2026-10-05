@@ -5,10 +5,12 @@ namespace TaskApi.Tests;
 
 public sealed class TaskItemTests
 {
+    private static readonly Guid UserId = Guid.NewGuid();
+
     [Fact]
     public void Complete_ShouldMarkTaskAsCompleted()
     {
-        var task = new TaskItem("Learn C#");
+        var task = new TaskItem(UserId, "Learn C#", null);
 
         task.Complete();
 
@@ -19,7 +21,7 @@ public sealed class TaskItemTests
     [Fact]
     public void Complete_WhenAlreadyCompleted_ShouldDoNothing()
     {
-        var task = new TaskItem("Learn C#");
+        var task = new TaskItem(UserId, "Learn C#", null);
 
         task.Complete();
         var firstUpdatedAt = task.UpdatedAt;
@@ -33,7 +35,7 @@ public sealed class TaskItemTests
     [Fact]
     public void Reopen_ShouldMarkCompletedTaskAsIncomplete()
     {
-        var task = new TaskItem("Learn C#");
+        var task = new TaskItem(UserId, "Learn C#", null);
 
         task.Complete();
         task.Reopen();
@@ -45,7 +47,7 @@ public sealed class TaskItemTests
     [Fact]
     public void Reopen_WhenAlreadyOpen_ShouldDoNothing()
     {
-        var task = new TaskItem("Learn C#");
+        var task = new TaskItem(UserId, "Learn C#", null);
 
         task.Reopen();
 

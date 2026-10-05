@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TaskApi.Domain;
 
-namespace TaskApi.Services;
+namespace TaskApi.Services.Auth;
 
 public sealed class JwtTokenService(
     IOptions<JwtOptions> options) : IJwtTokenService
@@ -18,12 +18,16 @@ public sealed class JwtTokenService(
         var claims = new[]
         {
             new Claim(
-                JwtRegisteredClaimNames.Sub,
+                ClaimTypes.NameIdentifier,
                 user.Id.ToString()),
 
             new Claim(
-                JwtRegisteredClaimNames.Email,
+                ClaimTypes.Email,
                 user.Email),
+
+            new Claim(
+                ClaimTypes.Role,
+                user.Role),
 
             new Claim(
                 JwtRegisteredClaimNames.Jti,
@@ -51,15 +55,18 @@ public sealed class JwtTokenService(
 
     public string CreateRefreshToken()
     {
-        var bytes = RandomNumberGenerator.GetBytes(64);
+        var bytes =
+            RandomNumberGenerator.GetBytes(64);
 
         return Convert.ToBase64String(bytes);
     }
 
-    public string HashRefreshToken(string refreshToken)
+    public string HashRefreshToken(
+        string refreshToken)
     {
-        var bytes = SHA256.HashData(
-            Encoding.UTF8.GetBytes(refreshToken));
+        var bytes =
+            SHA256.HashData(
+                Encoding.UTF8.GetBytes(refreshToken));
 
         return Convert.ToHexString(bytes);
     }
