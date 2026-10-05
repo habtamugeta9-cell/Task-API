@@ -63,3 +63,5 @@ app.UseStatusCodePages();
 
 app.Run();
 
+public partial class Program { }
+

@@ -19,8 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TaskApi.Tests\Domain\" />
-    <Folder Include="TaskApi.Tests\Services\" />
+    <Folder Include="TaskApi.Tests\" />
   </ItemGroup>
 
 </Project>

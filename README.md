@@ -974,7 +974,7 @@ Update this checklist as development progresses.
 [ ] 11 — Global Error Handling
 [ ] 12 — Logging
 [ ] 13 — Unit Testing
-[ ] 14 — Integration Testing
+[✅] 14 — Integration Testing
 [ ] 15 — JWT Authentication
 [ ] 16 — Authorization and Task Ownership
 [ ] 17 — Advanced API Features
@@ -1120,11 +1120,11 @@ The structure will evolve during development rather than being created all at on
 
 # Current Status
 
-**Current milestone:** COMMIT 09 — Database Persistence (in progress)
+**Current milestone:** COMMIT 14 — Integration Testing
 
-**Next milestone:** COMMIT 10 — Search, Filtering, Sorting, Pagination
+**Next milestone:** COMMIT 15 — JWT Authentication
 
-COMMIT 09 is not complete yet: `TaskService` still uses in-memory storage, and the database migration and persistence implementation remain to be done.
+COMMIT 14 is complete: the API is covered with end-to-end tests for list, create, validation, update, and delete scenarios using a test server and in-memory database.
 
 ---
 
