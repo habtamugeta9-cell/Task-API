@@ -12,10 +12,11 @@ public sealed class User
     public String? RefreshTokenHash { get; private set; }
     public DateTimeOffset? RefreshTokenExpiresAt { get; private set; }
 
-    private User() {
+    private User()
+    {
         Email = String.Empty;
         PasswordHash = String.Empty;
-     }
+    }
 
     public User(String email, String passwordHash)
     {
