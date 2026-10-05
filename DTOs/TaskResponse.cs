@@ -1,6 +1,6 @@
 using TaskApi.Domain;
 
-namespace TaskApi.Responses;
+namespace TaskApi.DTOs;
 
 public sealed class TaskResponse
 {
@@ -8,7 +8,7 @@ public sealed class TaskResponse
     public string Title { get; init; } =  string.Empty;
     public string? Description { get; init; } = null;
     public bool IsCompleted { get; init; } =  false;
-    public DateTimeOffset CreatedAt { get; init; } 
+    public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? UpdatedAt { get; private set; }
     public static TaskResponse FromDomain(TaskItem task)
     {
@@ -22,7 +22,4 @@ public sealed class TaskResponse
             UpdatedAt = task.UpdatedAt
         };
     }
-    
-     
 }
-

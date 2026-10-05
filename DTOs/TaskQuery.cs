@@ -1,7 +1,4 @@
-
-
-namespace TaskApi.Queries;
-
+namespace TaskApi.DTOs;
 
 /// <summary>
 /// Defines filtering, searching, sorting, and pagination options for tasks.

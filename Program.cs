@@ -26,6 +26,9 @@ builder
 builder
     .Services
     .AddScoped<ITaskService, TaskService>();
+builder
+    .Services
+    .AddScoped<ITaskQueryBuilder, TaskQueryBuilder>();
 
 builder
     .Services

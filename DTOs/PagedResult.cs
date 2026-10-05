@@ -1,5 +1,4 @@
-
-namespace TaskApi.Queries;
+namespace TaskApi.DTOs;
 
 /// <summary>
 /// Represents a paginated collection of results.

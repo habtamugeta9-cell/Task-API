@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TaskApi.Queries;
-using TaskApi.Requests;
-using TaskApi.Responses;
+using TaskApi.DTOs;
 using TaskApi.Services;
 
 namespace TaskApi.Controllers;
@@ -19,6 +17,9 @@ public sealed class TasksController(
     /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PagedTaskResponse>> GetAll(
         [FromQuery] TaskQuery query)
     {
@@ -98,6 +99,8 @@ public sealed class TasksController(
                     id,
                     request.Title,
                     request.Description);
+            
+            //I think i need more validation here; I DONT THINK NOT FOUND IS ENOUGH.
 
             if (!updated)
             {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskApi.Requests;
+namespace TaskApi.DTOs;
 
 /// <summary>
 /// Represents the data required to update a task.

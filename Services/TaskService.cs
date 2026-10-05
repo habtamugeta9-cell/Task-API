@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskApi.Data;
 using TaskApi.Domain;
-using TaskApi.Queries;
+using TaskApi.DTOs;
 
 namespace TaskApi.Services;
 
@@ -10,39 +10,17 @@ namespace TaskApi.Services;
 /// </summary>
 public sealed class TaskService(
     AppDbContext dbContext,
-    ILogger<ITaskService> logger) : ITaskService
+    ILogger<TaskService> logger,
+    ITaskQueryBuilder queryBuilder
+    ) : ITaskService
 {
     public async Task<PagedResult<TaskItem>> GetAllAsync(TaskQuery query)
     {
         var tasks = dbContext.Tasks.AsNoTracking();
+        tasks = queryBuilder.ApplyFilters(tasks, query);
 
-        if (!string.IsNullOrWhiteSpace(query.Search))
-        {
-            var search = query.Search.Trim();
-            tasks = tasks.Where(task =>
-                EF.Functions.ILike(task.Title, $"%{search}%") ||
-                (task.Description != null &&
-                    EF.Functions.ILike(task.Description, $"%{search}%")));
-        }
-
-        if (query.Completed.HasValue)
-        {
-            tasks = tasks.Where(task => task.IsCompleted == query.Completed.Value);
-        }
-
-        tasks = query.Sort?.ToLowerInvariant() switch
-        {
-            "title" => tasks.OrderBy(task => task.Title),
-            "title_desc" => tasks.OrderByDescending(task => task.Title),
-            "created_at" => tasks.OrderBy(task => task.CreatedAt),
-            "created_at_desc" => tasks.OrderByDescending(task => task.CreatedAt),
-            "completed" => tasks.OrderBy(task => task.IsCompleted),
-            "completed_desc" => tasks.OrderByDescending(task => task.IsCompleted),
-            _ => tasks.OrderByDescending(task => task.CreatedAt)
-        };
-
-        var page = Math.Max(query.Page, 1);
-        var pageSize = Math.Clamp(query.PageSize, 1, 100);
+        var page = queryBuilder.NormalizePage(query.Page);
+        var pageSize = queryBuilder.NormalizePageSize(query.PageSize);
 
         var totalCount = await tasks.CountAsync();
         var totalPages = totalCount == 0

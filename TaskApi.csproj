@@ -22,4 +22,8 @@
     <Folder Include="TaskApi.Tests\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="vault.cs" />
+  </ItemGroup>
+
 </Project>

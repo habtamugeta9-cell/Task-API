@@ -7,10 +7,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TaskApi.Data;
-using TaskApi.Requests;
-using TaskApi.Responses;
+using TaskApi.DTOs;
 
-namespace TaskApi.Tests;
 
 public sealed class TaskApiWebApplicationFactory : WebApplicationFactory<Program>
 {

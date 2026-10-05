@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using TaskApi.Requests;
+using TaskApi.DTOs;
 using Xunit;
 
 namespace TaskApi.Tests;

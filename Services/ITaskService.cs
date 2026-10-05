@@ -1,5 +1,5 @@
 using TaskApi.Domain;
-using TaskApi.Queries;
+using TaskApi.DTOs;
 
 namespace TaskApi.Services;
 /// <summary>

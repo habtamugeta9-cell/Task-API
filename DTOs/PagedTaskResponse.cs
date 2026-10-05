@@ -1,7 +1,6 @@
 using TaskApi.Domain;
-using TaskApi.Queries;
 
-namespace TaskApi.Responses;
+namespace TaskApi.DTOs;
 
 /// <summary>
 /// Represents a paginated task API response.

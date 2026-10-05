@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskApi.Requests;
+namespace TaskApi.DTOs;
 
 /// <summary>
 /// Represents the data required to create a task.
@@ -13,7 +13,7 @@ public sealed class CreateTaskRequest
         MinimumLength = 1,
         ErrorMessage = "Title must be between 1 and 200 characters.")]
     public string Title { get; init; } = string.Empty;
-    
+
     [StringLength(
         2000,
         ErrorMessage = "Description can not exceed 2000 characters.")]

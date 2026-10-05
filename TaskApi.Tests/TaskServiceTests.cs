@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using TaskApi.Data;
-using TaskApi.Queries;
+using TaskApi.DTOs;
 using TaskApi.Services;
 using Xunit;
 
@@ -22,7 +22,8 @@ public sealed class TaskServiceTests
     {
         return new TaskService(
             dbContext,
-            NullLogger<ITaskService>.Instance);
+            NullLogger<TaskService>.Instance,
+            new TaskQueryBuilder());
     }
 
     [Fact]
