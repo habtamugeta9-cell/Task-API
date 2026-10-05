@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>d072bdf3-a61a-4017-b816-a6c264dc6cf4</UserSecretsId>
+    <DefaultItemExcludesInProjectFolder>$(DefaultItemExcludesInProjectFolder);TaskApi.Tests/**</DefaultItemExcludesInProjectFolder>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTO\" />
+    <Folder Include="TaskApi.Tests\Domain\" />
+    <Folder Include="TaskApi.Tests\Services\" />
   </ItemGroup>
+
 </Project>
