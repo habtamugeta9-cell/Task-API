@@ -105,7 +105,7 @@ TaskApi
 
 ## Core Features
 
-The project currently covers the following capabilities through COMMIT 16:
+The project currently covers the following capabilities through COMMIT 17:
 
 ### Task Management
 
@@ -133,6 +133,15 @@ The project currently covers the following capabilities through COMMIT 16:
 * Restrict list, read, update, and delete operations to task owners
 * Allow administrators to access tasks across owners
 * Protect `GET /api/tasks/all` with the admin-only policy
+
+### Advanced API Features
+
+* PATCH complete/uncomplete operations
+* Optimistic concurrency with task versions
+* HTTP ETag / If-Match protection
+* Per-user short-lived task caching
+* API rate limiting
+* Authentication-specific rate limiting
 
 ### Reliability and Quality
 
@@ -164,10 +173,12 @@ GET    /api/tasks/all
 GET    /api/tasks/{id}
 POST   /api/tasks
 PUT    /api/tasks/{id}
+PATCH  /api/tasks/{id}/complete
+PATCH  /api/tasks/{id}/uncomplete
 DELETE /api/tasks/{id}
 ```
 
-All task endpoints require a valid bearer token. `GET /api/tasks` returns only the caller's tasks; `GET /api/tasks/all` is restricted to administrators. Requests for another user's task return `404 Not Found` to avoid revealing whether the task exists.
+All task endpoints require a valid bearer token. `GET /api/tasks` returns only the caller's tasks; `GET /api/tasks/all` is restricted to administrators. Requests for another user's task return `404 Not Found` to avoid revealing whether the task exists. `PUT`, `PATCH`, and `DELETE` task mutations require an `If-Match` header containing the ETag returned by `GET /api/tasks/{id}`.
 
 ---
 
@@ -1011,7 +1022,7 @@ Update this checklist as development progresses.
 [✅] 14 — Integration Testing
 [✅] 15 — JWT Authentication
 [✅] 16 — Authorization and Task Ownership
-[ ] 17 — Advanced API Features
+[✅] 17 — Advanced API Features
 [ ] 18 — Production Configuration
 [ ] 19 — Docker and Docker Compose
 [ ] 20 — GitHub Actions CI/CD

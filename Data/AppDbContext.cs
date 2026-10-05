@@ -49,6 +49,10 @@ public sealed class AppDbContext(
                 .IsRequired();
 
             entity.Property(task => task.UpdatedAt);
+
+            entity.Property(task => task.Version)
+                .IsRequired()
+                .IsConcurrencyToken();
         });
 
         modelBuilder.Entity<User>(entity =>

@@ -1,6 +1,8 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TaskApi.Authorization;
@@ -15,6 +17,31 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Services
     .AddControllers();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter(
+        "api",
+        limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 100;
+            limiterOptions.Window = TimeSpan.FromMinutes(1);
+            limiterOptions.QueueLimit = 0;
+            limiterOptions.AutoReplenishment = true;
+        });
+
+    options.AddFixedWindowLimiter(
+        "auth",
+        limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 10;
+            limiterOptions.Window = TimeSpan.FromMinutes(1);
+            limiterOptions.QueueLimit = 0;
+            limiterOptions.AutoReplenishment = true;
+        });
+});
 
 builder
     .Services
@@ -103,6 +130,14 @@ builder
 
 builder
     .Services
+    .AddMemoryCache();
+
+builder
+    .Services
+    .AddSingleton<TaskCacheService>();
+
+builder
+    .Services
     .AddScoped<ITaskService, TaskService>();
 
 builder
@@ -167,6 +202,8 @@ app.UseStatusCodePages();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 

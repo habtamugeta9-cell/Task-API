@@ -20,6 +20,27 @@ public interface ITaskService
         string title,
         string? description);
 
+    Task<TaskMutationResult> UpdateAsync(
+        Guid id,
+        Guid userId,
+        bool isAdmin,
+        string title,
+        string? description,
+        Guid expectedVersion);
+
+    Task<TaskMutationResult> SetCompletionAsync(
+        Guid id,
+        Guid userId,
+        bool isAdmin,
+        bool completed,
+        Guid expectedVersion);
+
+    Task<TaskMutationResult> DeleteAsync(
+        Guid id,
+        Guid userId,
+        bool isAdmin,
+        Guid expectedVersion);
+
     Task<bool> UpdateAsync(
         Guid id,
         Guid userId,

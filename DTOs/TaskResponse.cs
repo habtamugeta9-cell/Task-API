@@ -18,6 +18,8 @@ public sealed class TaskResponse
 
     public DateTimeOffset? UpdatedAt { get; init; }
 
+    public Guid Version { get; init; }
+
     public static TaskResponse FromDomain(
         TaskItem task)
     {
@@ -29,7 +31,8 @@ public sealed class TaskResponse
             Description = task.Description,
             IsCompleted = task.IsCompleted,
             CreatedAt = task.CreatedAt,
-            UpdatedAt = task.UpdatedAt
+            UpdatedAt = task.UpdatedAt,
+            Version = task.Version
         };
     }
 }

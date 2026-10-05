@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using TaskApi.Data;
 using TaskApi.Domain;
 using TaskApi.DTOs;
+using TaskApi.Services;
 using TaskApi.Services.Tasks;
 using Xunit;
 
@@ -475,5 +476,58 @@ public sealed class TaskServiceTests
         var result = await service.DeleteAsync(Guid.NewGuid(), userId, false);
 
         Assert.False(result);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldReturnConflict_WhenVersionIsStale()
+    {
+        await using var dbContext = CreateDbContext();
+        var service = CreateService(dbContext);
+        var userId = Guid.NewGuid();
+
+        var task = await service.CreateAsync(
+            userId,
+            "Old title",
+            "Original description");
+
+        var staleVersion = task.Version;
+        task.Update("Changed elsewhere", "Updated by someone else");
+        await dbContext.SaveChangesAsync();
+
+        var result = await service.UpdateAsync(
+            task.Id,
+            userId,
+            false,
+            "My update",
+            "Latest description",
+            staleVersion);
+
+        Assert.Equal(TaskMutationStatus.Conflict, result.Status);
+    }
+
+    [Fact]
+    public async Task SetCompletionAsync_ShouldChangeCompletionState()
+    {
+        await using var dbContext = CreateDbContext();
+        var service = CreateService(dbContext);
+        var userId = Guid.NewGuid();
+
+        var task = await service.CreateAsync(
+            userId,
+            "Write docs",
+            null);
+
+        var completed = await service.SetCompletionAsync(
+            task.Id,
+            userId,
+            false,
+            true,
+            task.Version);
+
+        Assert.Equal(TaskMutationStatus.Success, completed.Status);
+
+        var stored = await dbContext.Tasks.FindAsync(task.Id);
+        Assert.NotNull(stored);
+        Assert.True(stored.IsCompleted);
     }
 }

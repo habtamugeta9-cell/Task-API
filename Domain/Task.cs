@@ -17,6 +17,8 @@ public sealed class TaskItem
 
     public DateTimeOffset? UpdatedAt { get; private set; }
 
+    public Guid Version { get; private set; } = Guid.NewGuid();
+
     private TaskItem()
     {
         Title = string.Empty;
@@ -34,26 +36,7 @@ public sealed class TaskItem
                 nameof(userId));
         }
 
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            throw new ArgumentException(
-                "Title is required.",
-                nameof(title));
-        }
-
-        if (title.Length > 200)
-        {
-            throw new ArgumentException(
-                "Title cannot exceed 200 characters.",
-                nameof(title));
-        }
-
-        if (description?.Length > 2000)
-        {
-            throw new ArgumentException(
-                "Description cannot exceed 2000 characters.",
-                nameof(description));
-        }
+        Validate(title, description);
 
         UserId = userId;
         Title = title.Trim();
@@ -62,6 +45,53 @@ public sealed class TaskItem
     }
 
     public void Update(
+        string title,
+        string? description)
+    {
+        Validate(title, description);
+
+        Title = title.Trim();
+        Description = description?.Trim();
+
+        MarkChanged();
+    }
+
+    public void Complete()
+    {
+        if (IsCompleted)
+        {
+            return;
+        }
+
+        IsCompleted = true;
+
+        MarkChanged();
+    }
+
+    public void Uncomplete()
+    {
+        if (!IsCompleted)
+        {
+            return;
+        }
+
+        IsCompleted = false;
+
+        MarkChanged();
+    }
+
+    public void Reopen()
+    {
+        Uncomplete();
+    }
+
+    private void MarkChanged()
+    {
+        UpdatedAt = DateTimeOffset.UtcNow;
+        Version = Guid.NewGuid();
+    }
+
+    private static void Validate(
         string title,
         string? description)
     {
@@ -85,31 +115,5 @@ public sealed class TaskItem
                 "Description cannot exceed 2000 characters.",
                 nameof(description));
         }
-
-        Title = title.Trim();
-        Description = description?.Trim();
-        UpdatedAt = DateTimeOffset.UtcNow;
-    }
-
-    public void Complete()
-    {
-        if (IsCompleted)
-        {
-            return;
-        }
-
-        IsCompleted = true;
-        UpdatedAt = DateTimeOffset.UtcNow;
-    }
-
-    public void Reopen()
-    {
-        if (!IsCompleted)
-        {
-            return;
-        }
-
-        IsCompleted = false;
-        UpdatedAt = DateTimeOffset.UtcNow;
     }
 }

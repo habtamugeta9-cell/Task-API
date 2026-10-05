@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskApi.DTO.Auth;
 using TaskApi.Services.Auth;
 
 namespace TaskApi.Controllers;
 
+[EnableRateLimiting("auth")]
 [ApiController]
 [Route("api/auth")]
 public sealed class AuthController(

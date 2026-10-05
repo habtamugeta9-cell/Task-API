@@ -54,4 +54,29 @@ public sealed class TaskItemTests
         Assert.False(task.IsCompleted);
         Assert.Null(task.UpdatedAt);
     }
+
+    [Fact]
+    public void Version_ShouldChange_WhenTaskChanges()
+    {
+        var task = new TaskItem(UserId, "Learn C#", null);
+        var originalVersion = task.Version;
+
+        task.Update("Learn ASP.NET Core", "Build the API");
+
+        Assert.NotEqual(originalVersion, task.Version);
+        Assert.NotNull(task.UpdatedAt);
+    }
+
+    [Fact]
+    public void Uncomplete_ShouldMarkTaskAsIncomplete()
+    {
+        var task = new TaskItem(UserId, "Learn C#", null);
+        task.Complete();
+
+        var originalVersion = task.Version;
+        task.Uncomplete();
+
+        Assert.False(task.IsCompleted);
+        Assert.NotEqual(originalVersion, task.Version);
+    }
 }
