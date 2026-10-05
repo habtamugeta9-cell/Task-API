@@ -10,134 +10,98 @@ The project is developed incrementally using a **commit-based roadmap**, where e
 
 ## Project Overview
 
-The Task API provides a backend service for creating, managing, searching, filtering, and completing tasks.
+Task API is a .NET 10 backend project designed to model a realistic task-management service from the ground up. It follows a structured engineering roadmap where each milestone adds a new layer of backend maturity: domain modeling, persistence, validation, service design, testing, and error handling.
 
-The project will progressively include:
+The project is intentionally built as a learning-focused but production-minded API. The current implementation already includes a clean ASP.NET Core controller/service architecture, EF Core persistence, query filtering and pagination, robust validation, and an end-to-end integration test suite.
+
+This repository demonstrates how a small but real API evolves from a simple CRUD application into a professional service that is easier to test, reason about, and extend.
+
+### What the project demonstrates
 
 * RESTful API design
-* CRUD operations
-* C# backend development
-* ASP.NET Core Web API
-* Entity Framework Core
-* PostgreSQL database
-* Dependency Injection
-* DTOs and API contracts
-* Input validation
-* Global error handling
-* Structured logging
-* Unit testing
-* Integration testing
-* JWT authentication
-* Authorization
-* Pagination
-* Filtering and sorting
-* Rate limiting
-* Caching
-* Docker
-* GitHub Actions CI/CD
-* OpenAPI documentation
-* Production deployment
+* Dependency injection and service composition
+* DTO-based API contracts
+* EF Core persistence with PostgreSQL-ready setup
+* Query filtering, sorting, and pagination
+* Validation and business-rule enforcement
+* Global exception handling with ProblemDetails
+* Structured logging and diagnostics
+* Unit and integration testing with xUnit
+* A clear milestone-driven engineering workflow
 
 ---
 
 # Technology Stack
 
-| Technology                   | Purpose                      |
-| ---------------------------- | ---------------------------- |
-| **C# 14**                    | Programming language         |
-| **.NET 10**                  | Runtime and SDK              |
-| **ASP.NET Core 10**          | REST API / Web API framework |
-| **Entity Framework Core 10** | ORM and database access      |
-| **PostgreSQL**               | Relational database          |
-| **OpenAPI**                  | API documentation            |
-| **xUnit**                    | Automated testing            |
-| **Docker**                   | Containerization             |
-| **GitHub Actions**           | CI/CD                        |
-| **Git / GitHub**             | Version control              |
+| Technology | Purpose |
+| --- | --- |
+| **C# 14** | Application language |
+| **.NET 10** | Runtime and framework |
+| **ASP.NET Core 10** | REST API server |
+| **Entity Framework Core 10** | ORM and persistence layer |
+| **PostgreSQL** | Relational database |
+| **xUnit** | Automated testing |
+| **OpenAPI** | API metadata and documentation |
+| **Git / GitHub** | Version control and collaboration |
 
 ---
 
 # Core Features
 
-The final Task API is planned to support:
+The project currently covers the following capabilities through COMMIT 14:
 
 ### Task Management
 
 * Create tasks
-* Get all tasks
-* Get a task by ID
+* Read all tasks
+* Read a task by ID
 * Update tasks
 * Delete tasks
-* Complete and uncomplete tasks
+* Complete and reopen tasks via the domain model
 
-### Querying
+### Querying and API Behavior
 
-* Search tasks
-* Filter tasks
-* Sort tasks
-* Paginate results
+* Search by title or description
+* Filter by completion state
+* Sort by supported fields
+* Paginate results with metadata
+* Validate invalid page, page size, and sort options
 
-### Backend Architecture
+### Reliability and Quality
 
-* Controllers
-* Services
-* Domain models
-* DTOs
-* Dependency Injection
-* Entity Framework Core
-* PostgreSQL
-
-### Reliability
-
-* Validation
+* Input validation on DTOs and domain rules
+* Consistent HTTP problem responses
 * Global exception handling
-* ProblemDetails responses
-* Structured logging
-* Unit tests
-* Integration tests
+* Logging for service operations and failures
+* Unit tests for business logic
+* Integration tests for end-to-end API behavior
 
-### Security
+### Architecture
 
-* User registration
-* User login
-* Password hashing
-* JWT authentication
-* Authorization
-* Task ownership
-* Roles and permissions
-
-### DevOps
-
-* Docker
-* Docker Compose
-* GitHub Actions
-* Automated build and test
-* Environment-based configuration
-* Health checks
-* Production deployment
+* Controllers for HTTP concerns
+* Services for application logic
+* Domain model for task behavior
+* DTOs for request and response contracts
+* EF Core `DbContext` for data access
+* Dependency injection for decoupled design
 
 ---
 
-# API Roadmap
+# API Surface
 
-The API will progressively evolve toward endpoints such as:
+The API currently supports the following endpoints:
 
 ```http
 GET    /api/tasks
 GET    /api/tasks/{id}
 POST   /api/tasks
 PUT    /api/tasks/{id}
-PATCH  /api/tasks/{id}/complete
 DELETE /api/tasks/{id}
 ```
 
-Authentication will later introduce endpoints such as:
+The project remains intentionally scoped to the COMMIT 14 milestone, so authentication and authorization are not yet implemented. That work is intentionally reserved for later roadmap milestones.
 
-```http
-POST /api/auth/register
-POST /api/auth/login
-POST /api/auth/refresh
-```
+---
 
 ---
 
@@ -1124,7 +1088,15 @@ The structure will evolve during development rather than being created all at on
 
 **Next milestone:** COMMIT 15 — JWT Authentication
 
-COMMIT 14 is complete: the API is covered with end-to-end tests for list, create, validation, update, and delete scenarios using a test server and in-memory database.
+COMMIT 14 is complete. The project now includes end-to-end HTTP coverage for listing, creating, validating, updating, and deleting tasks using a test server backed by an in-memory database. The application also includes domain validation, structured logging, global error handling, and query validation to keep the API behavior consistent and professional at this stage.
+
+### Verified project quality at this stage
+
+* Task CRUD flow is covered end-to-end
+* Validation rules are enforced consistently
+* Search, filtering, and pagination behavior is tested
+* Global exception handling returns problem details without leaking internal details
+* The project stays within the planned milestone boundary and avoids jumping ahead into authentication features
 
 ---
 
