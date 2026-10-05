@@ -16,6 +16,41 @@ The project is intentionally built as a learning-focused but production-minded A
 
 This repository demonstrates how a small but real API evolves from a simple CRUD application into a professional service that is easier to test, reason about, and extend.
 
+### Architectural blueprint
+
+```text
+TaskApi
+├── Controllers
+│   └── TasksController
+├── Services
+│   ├── ITaskService
+│   ├── TaskService
+│   └── TaskQueryBuilder
+├── Domain
+│   └── TaskItem
+├── DTOs
+│   ├── CreateTaskRequest
+│   ├── UpdateTaskRequest
+│   ├── TaskResponse
+│   ├── PagedTaskResponse
+│   └── TaskQuery
+├── Data
+│   └── AppDbContext
+├── Errors
+│   └── GlobalExceptionHandler
+├── Tests
+│   ├── TaskServiceTests
+│   ├── TaskRequestValidationTests
+│   ├── TasksApiIntegrationTests
+│   └── GlobalExceptionHandlerTests
+├── Program.cs
+├── TaskApi.csproj
+├── appsettings.json
+├── appsettings.Development.json
+├── global.json
+└── README.md
+```
+
 ### What the project demonstrates
 
 * RESTful API design
@@ -31,7 +66,7 @@ This repository demonstrates how a small but real API evolves from a simple CRUD
 
 ---
 
-# Technology Stack
+## Technology Stack
 
 | Technology | Purpose |
 | --- | --- |
@@ -46,7 +81,7 @@ This repository demonstrates how a small but real API evolves from a simple CRUD
 
 ---
 
-# Core Features
+## Core Features
 
 The project currently covers the following capabilities through COMMIT 14:
 
@@ -87,7 +122,7 @@ The project currently covers the following capabilities through COMMIT 14:
 
 ---
 
-# API Surface
+## API Surface
 
 The API currently supports the following endpoints:
 
@@ -103,9 +138,7 @@ The project remains intentionally scoped to the COMMIT 14 milestone, so authenti
 
 ---
 
----
-
-# Development Roadmap
+## Development Roadmap
 
 The project is divided into **24 commit-based engineering milestones**.
 
@@ -152,7 +185,7 @@ git commit -m "chore: initialize task api project"
 * Define basic domain rules
 * Build the application
 
-### Initial model
+### Core domain model
 
 ```text
 Task
